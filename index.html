@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHYS-004A Grade Checker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PHYS-004A Grade Checker</h1>
+            <p class="subtitle">Engineering Physics: Mechanics</p>
+        </header>
+
+        <main>
+            <section class="manual-entry-section" id="manualEntrySection">
+                <h2>Enter Your Learning Outcomes Scores</h2>
+                <p class="info-text">Enter your scores from the <strong>Learning Mastery</strong> tab in Canvas. <strong>Uncheck "N/A"</strong> and enter your score for each assessed outcome. Leave "N/A" checked for outcomes that haven't been graded yet.</p>
+
+                <div class="score-entry">
+                    <h3>Physics Standards (12 SLOs)</h3>
+                    <div class="slo-grid">
+                        <div class="slo-item">
+                            <label>Apply a problem-solving strategy</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="0" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Explain and apply core physical principles to 1-d motion</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="1" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="1" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply Newton's laws of motion to a system</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="2" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="2" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply the Newton's law of motion to rotating object (torque)</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="3" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="3" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply the principle of conservation of energy</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="4" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="4" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply the principle of conservation of momentum</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="5" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="5" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply principles of conservation of energy/momentum to rotating objects</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="6" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="6" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply the principles of fluid physics</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="7" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="7" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Apply the principles of rotational kinematics and dynamics</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="8" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="8" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Display good scientific practices</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="9" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="9" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Calculate different energies of a system and work done by a force</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="10" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="10" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Calculate the forces experienced by objects in a fluid</label>
+                            <div class="input-group">
+                                <input type="number" class="physics-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="11" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check physics-na" data-target="11" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Lab Skills Standards (5 SLOs)</h3>
+                    <div class="slo-grid">
+                        <div class="slo-item">
+                            <label>Analyze real-world experimental data</label>
+                            <div class="input-group">
+                                <input type="number" class="lab-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check lab-na" data-target="0" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Collaborate with other students in problem-solving and laboratory activities</label>
+                            <div class="input-group">
+                                <input type="number" class="lab-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="1" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check lab-na" data-target="1" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Create lab reports in line with scientific standards</label>
+                            <div class="input-group">
+                                <input type="number" class="lab-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="2" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check lab-na" data-target="2" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Relate the results of experimental data to the physical concepts discussed in lecture</label>
+                            <div class="input-group">
+                                <input type="number" class="lab-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="3" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check lab-na" data-target="3" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Observe, make a hypothesis, creates a test</label>
+                            <div class="input-group">
+                                <input type="number" class="lab-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="4" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check lab-na" data-target="4" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Behavior Standards (2 SLOs)</h3>
+                    <div class="slo-grid">
+                        <div class="slo-item">
+                            <label>Come prepared and ready to engage</label>
+                            <div class="input-group">
+                                <input type="number" class="behavior-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check behavior-na" data-target="0" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Turn in assignment in a timely manner</label>
+                            <div class="input-group">
+                                <input type="number" class="behavior-slo" step="0.1" min="0" max="3" placeholder="0.0" data-index="1" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" class="na-check behavior-na" data-target="1" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Additional Information</h3>
+                    <div class="slo-grid">
+                        <div class="slo-item">
+                            <label>Number of labs missed</label>
+                            <input type="number" id="labsMissed" min="0" max="20" placeholder="0" value="0">
+                        </div>
+                        <div class="slo-item">
+                            <label>Project SLOs at 2.0 or above (out of 3)</label>
+                            <div class="input-group">
+                                <input type="number" id="projectSLOs" min="0" max="3" placeholder="0" value="0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="projectNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Project SLOs at 3.0 (out of 3)</label>
+                            <div class="input-group">
+                                <input type="number" id="projectSLOs3" min="0" max="3" placeholder="0" value="0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="project3NA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Concept matching on final score</label>
+                            <div class="input-group">
+                                <input type="number" id="conceptMatching" step="0.1" min="0" max="3" placeholder="0.0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="conceptNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="calculateBtn" class="calculate-btn">Calculate My Grade</button>
+            </section>
+
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h2>Your Grade Calculation</h2>
+
+                <div class="grade-display">
+                    <div class="progress-indicator" id="progressIndicator"></div>
+                    <div class="grade-letter" id="gradeLetter">-</div>
+                    <div class="grade-description" id="gradeDescription">Enter your scores to see your grade</div>
+                </div>
+
+                <div class="projection-info" id="projectionInfo"></div>
+
+                <div class="checklist-container" id="checklistContainer">
+                    <!-- Checklists will be inserted here by JavaScript -->
+                </div>
+
+                <div class="summary-stats" id="summaryStats">
+                    <!-- Summary statistics will be inserted here -->
+                </div>
+
+                <button id="resetBtn" class="reset-btn">Enter New Scores</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>This tool is based on the grading criteria outlined in the course syllabus.</p>
+            <p>For questions about your grades, please contact your instructor.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
