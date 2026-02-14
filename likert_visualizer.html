@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Likert Scale Survey Visualizer</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: #f0f1f5;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-input-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .file-input-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .control-group.x-axis label {
+            color: #2563eb;
+        }
+
+        .control-group.y-axis label {
+            color: #dc2626;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        #plot {
+            width: 100%;
+            height: 700px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-text {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .question-display {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .question-display h3 {
+            color: #333;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-display p {
+            color: #555;
+            font-size: 1em;
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .question-display .axis-label {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .question-display .x-label {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .question-display .y-label {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Likert Scale Survey Visualizer</h1>
+        <p class="subtitle">Interactive visualization of survey responses</p>
+
+        <div class="upload-section">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333;">Google Sheets URL:</label>
+                <input type="text" id="sheetsUrl" placeholder="Paste your Google Sheets URL here..."
+                       style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                <button id="loadSheets" style="margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">
+                    📊 Load from Google Sheets
+                </button>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0; color: #999; font-weight: bold;">OR</div>
+
+            <div class="file-input-wrapper">
+                <label for="fileInput" class="file-input-button">
+                    📁 Choose CSV File
+                </label>
+                <input type="file" id="fileInput" accept=".csv">
+            </div>
+            <p class="info-text">Upload your Google Forms CSV export</p>
+            <p class="info-text">Expected values: Never, A few times a year, A few times a month, Almost every day, Every day</p>
+
+            <details style="margin-top: 15px; padding: 10px; background: #f0f1f5; border-radius: 8px;">
+                <summary style="cursor: pointer; font-weight: 600; color: #667eea;">How to publish your Google Sheet (Required!)</summary>
+                <ol style="margin: 10px 0; padding-left: 20px; line-height: 1.8;">
+                    <li>Open your Google Sheet</li>
+                    <li>Click <strong>File → Share → Publish to web</strong></li>
+                    <li>In the dialog, choose "Entire Document" or select your specific sheet</li>
+                    <li>Select "Comma-separated values (.csv)" from the dropdown</li>
+                    <li>Click <strong>Publish</strong></li>
+                    <li>Copy the published CSV link and paste above</li>
+                </ol>
+                <p style="margin-top: 10px; color: #666; font-size: 0.9em;"><strong>Note:</strong> Just sharing the sheet won't work - you must publish it to the web as CSV!</p>
+            </details>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <div id="statsSection" class="stats hidden">
+            <div class="stat-card">
+                <div class="stat-value" id="totalResponses">0</div>
+                <div class="stat-label">Total Responses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="validPairs">0</div>
+                <div class="stat-label">Valid Pairs</div>
+            </div>
+        </div>
+
+        <div id="controlsSection" class="controls hidden">
+            <div class="control-group x-axis">
+                <label for="xAxis">📐 X-Axis Question</label>
+                <select id="xAxis"></select>
+            </div>
+            <div class="control-group y-axis">
+                <label for="yAxis">📏 Y-Axis Question</label>
+                <select id="yAxis"></select>
+            </div>
+        </div>
+
+        <div id="plot"></div>
+
+        <div id="controlsSectionBottom" class="controls hidden">
+            <div class="control-group x-axis">
+                <label for="xAxisBottom">📐 X-Axis Question</label>
+                <select id="xAxisBottom"></select>
+            </div>
+            <div class="control-group y-axis">
+                <label for="yAxisBottom">📏 Y-Axis Question</label>
+                <select id="yAxisBottom"></select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Likert scale mapping
+        const likertMapping = {
+            'Never': 0,
+            'A few times a year': 1,
+            'A few times a month': 2,
+            'Almost every day': 3,
+            'Every day': 4
+        };
+
+        const likertLabels = Object.keys(likertMapping);
+
+        let surveyData = null;
+        let questions = [];
+        let questionLabels = {}; // Short labels for display
+
+        // Default Google Sheets URL - automatically loads on page load
+        // NOTE: This MUST be a published CSV URL, not just a shared link
+        // To get: File → Share → Publish to web → CSV format
+        // Set to empty string '' to disable auto-load
+        const DEFAULT_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZDxeeszKV1gXSMMB9QjhSnIhgB7DEfBTaBv60smhTEix2bL8t_vEo13sp9zYbq9C6WvxzBX8FeYqZ/pub?output=csv';
+
+        // Define zones for specific question pairs
+        const questionZones = {
+            zones: [
+                // 1. "I Use AI" vs "I Want Students to Use AI"
+                {
+                    xPattern: /use AI in your professional work/i,
+                    yPattern: /want your students.*use AI/i,
+                    regions: [
+                        {
+                            name: "Design Gap",
+                            color: "rgba(239, 68, 68, 0.15)", // red
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Unexamined Privilege",
+                            color: "rgba(59, 130, 246, 0.15)", // blue
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /want your students.*use AI/i,
+                    yPattern: /use AI in your professional work/i,
+                    regions: [
+                        {
+                            name: "Unexamined Modeling",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Design Gap",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+
+                // 2. "Students Use AI" vs "I Want Students to Use AI"
+                {
+                    xPattern: /think your students use AI/i,
+                    yPattern: /want your students.*use AI/i,
+                    regions: [
+                        {
+                            name: "Unregulated Use",
+                            color: "rgba(245, 158, 11, 0.15)", // amber
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Untapped Potential",
+                            color: "rgba(139, 92, 246, 0.15)", // purple
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /want your students.*use AI/i,
+                    yPattern: /think your students use AI/i,
+                    regions: [
+                        {
+                            name: "Untapped Potential",
+                            color: "rgba(139, 92, 246, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Unregulated Use",
+                            color: "rgba(245, 158, 11, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+
+                // 3. "Researchers Use AI" vs "Students Use AI"
+                {
+                    xPattern: /researchers.*use AI/i,
+                    yPattern: /think your students use AI/i,
+                    regions: [
+                        {
+                            name: "Premature Dependence",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Preparation Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /think your students use AI/i,
+                    yPattern: /researchers.*use AI/i,
+                    regions: [
+                        {
+                            name: "Preparation Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Premature Dependence",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+
+                // 4. "Employers Use AI" vs "Students Use AI"
+                {
+                    xPattern: /employers.*expect.*use AI/i,
+                    yPattern: /think your students use AI/i,
+                    regions: [
+                        {
+                            name: "Premature Reliance",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Workforce Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /think your students use AI/i,
+                    yPattern: /employers.*expect.*use AI/i,
+                    regions: [
+                        {
+                            name: "Workforce Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Premature Reliance",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+
+                // 5. "I Use AI" vs "Researchers Use AI"
+                {
+                    xPattern: /use AI in your professional work/i,
+                    yPattern: /researchers.*use AI/i,
+                    regions: [
+                        {
+                            name: "Early Adopter",
+                            color: "rgba(16, 185, 129, 0.15)", // green
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Adoption Gap",
+                            color: "rgba(244, 114, 182, 0.15)", // pink
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /researchers.*use AI/i,
+                    yPattern: /use AI in your professional work/i,
+                    regions: [
+                        {
+                            name: "Adoption Gap",
+                            color: "rgba(244, 114, 182, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Early Adopter",
+                            color: "rgba(16, 185, 129, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+
+                // 6. "I Want Students to Use" vs "Researchers Use AI"
+                {
+                    xPattern: /want your students.*use AI/i,
+                    yPattern: /researchers.*use AI/i,
+                    regions: [
+                        {
+                            name: "Over-Acceleration",
+                            color: "rgba(239, 68, 68, 0.15)", // red
+                            condition: (x, y) => x > y + 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Preparation Gap",
+                            color: "rgba(59, 130, 246, 0.15)", // blue
+                            condition: (x, y) => x < y - 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /researchers.*use AI/i,
+                    yPattern: /want your students.*use AI/i,
+                    regions: [
+                        {
+                            name: "Preparation Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Over-Acceleration",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+
+                // 7. "I Want Students to Use" vs "Employers Expect AI"
+                {
+                    xPattern: /want your students.*use AI/i,
+                    yPattern: /employers.*expect.*use AI/i,
+                    regions: [
+                        {
+                            name: "Imbalanced Preparation",
+                            color: "rgba(239, 68, 68, 0.15)", // red
+                            condition: (x, y) => x > y + 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Workforce Readiness Gap",
+                            color: "rgba(59, 130, 246, 0.15)", // blue
+                            condition: (x, y) => x < y - 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /employers.*expect.*use AI/i,
+                    yPattern: /want your students.*use AI/i,
+                    regions: [
+                        {
+                            name: "Workforce Readiness Gap",
+                            color: "rgba(59, 130, 246, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        },
+                        {
+                            name: "Imbalanced Preparation",
+                            color: "rgba(239, 68, 68, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        }
+                    ]
+                },
+
+                // 8. "I Use AI" vs "Employers Expect AI"
+                {
+                    xPattern: /use AI in your professional work/i,
+                    yPattern: /employers.*expect.*use AI/i,
+                    regions: [
+                        {
+                            name: "Industry Pressure",
+                            color: "rgba(234, 179, 8, 0.15)", // yellow
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Personal Innovation",
+                            color: "rgba(99, 102, 241, 0.15)", // indigo
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                },
+                {
+                    xPattern: /employers.*expect.*use AI/i,
+                    yPattern: /use AI in your professional work/i,
+                    regions: [
+                        {
+                            name: "Personal Innovation",
+                            color: "rgba(99, 102, 241, 0.15)",
+                            condition: (x, y) => y > x + 0.3,
+                            textPosition: { x: 0.5, y: 3.5 }
+                        },
+                        {
+                            name: "Industry Pressure",
+                            color: "rgba(234, 179, 8, 0.15)",
+                            condition: (x, y) => y < x - 0.3,
+                            textPosition: { x: 3.5, y: 0.5 }
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function findZonesForQuestions(xQuestion, yQuestion) {
+            // Find matching zone definition
+            for (let zoneConfig of questionZones.zones) {
+                if (zoneConfig.xPattern.test(xQuestion) && zoneConfig.yPattern.test(yQuestion)) {
+                    return zoneConfig.regions;
+                }
+            }
+            return null;
+        }
+
+        function createShortLabel(fullQuestion, index) {
+            // Create a shorter version for dropdown display
+            if (fullQuestion.length <= 60) {
+                return fullQuestion;
+            }
+            // Try to extract key words
+            const words = fullQuestion.split(' ');
+            if (words.length > 8) {
+                return `Q${index + 1}: ${words.slice(0, 8).join(' ')}...`;
+            }
+            return `Q${index + 1}: ${fullQuestion.substring(0, 60)}...`;
+        }
+
+        // Function to load Google Sheets data
+        function loadGoogleSheet(url) {
+            if (!url) {
+                url = document.getElementById('sheetsUrl').value.trim();
+            }
+
+            if (!url) {
+                showError('Please enter a Google Sheets URL');
+                return;
+            }
+
+            let csvUrl = url;
+
+            // Check if this is already a published CSV URL
+            if (!url.includes('output=csv') && !url.includes('format=csv')) {
+                // Try to convert regular sheet URL to published CSV URL
+                let spreadsheetId = '';
+                let gid = '';
+
+                // Extract from various Google Sheets URL formats
+                const match1 = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                if (match1) {
+                    spreadsheetId = match1[1];
+                }
+
+                const match2 = url.match(/[#&]gid=([0-9]+)/);
+                if (match2) {
+                    gid = match2[1];
+                }
+
+                if (!spreadsheetId) {
+                    showError('Invalid Google Sheets URL. Please copy the full URL from your browser.');
+                    return;
+                }
+
+                // Construct published CSV URL
+                csvUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/pub?output=csv`;
+                if (gid) {
+                    csvUrl += `&gid=${gid}`;
+                }
+            }
+
+            // Try fetch API first to handle redirects explicitly
+            tryFetchMethod(csvUrl);
+        }
+
+        // Try using fetch API to handle redirects, then parse with PapaParse
+        function tryFetchMethod(csvUrl) {
+            showError('Loading data from Google Sheets...');
+            console.log('Attempting to fetch CSV from:', csvUrl);
+
+            // Use XMLHttpRequest as a fallback since fetch might have issues with Google redirects
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', csvUrl, true);
+
+            xhr.onload = function() {
+                console.log('XHR response received');
+                console.log('Status:', xhr.status);
+                console.log('Response length:', xhr.responseText.length);
+                console.log('First 200 chars:', xhr.responseText.substring(0, 200));
+
+                if (xhr.status === 200) {
+                    const csvText = xhr.responseText;
+
+                    // Parse the CSV text with PapaParse
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            console.log('Papa Parse complete. Results:', results);
+                            try {
+                                if (results.errors && results.errors.length > 0) {
+                                    console.error('Papa Parse errors:', results.errors);
+                                }
+                                if (!results.data || results.data.length === 0) {
+                                    console.error('No data in results');
+                                    showError('No data found. Please make sure your sheet has data and is published correctly.');
+                                    return;
+                                }
+                                console.log('Processing data with', results.data.length, 'rows');
+                                console.log('First row:', results.data[0]);
+                                processData(results.data);
+                                showError('');
+                            } catch (error) {
+                                console.error('Error processing data:', error);
+                                showError(error.message);
+                            }
+                        }
+                    });
+                } else {
+                    console.error('XHR error status:', xhr.status);
+                    showError('❌ Failed to load (status ' + xhr.status + ')<br><br>Make sure your sheet is published:<br>1. File → Share → Publish to web<br>2. Choose "CSV" format<br>3. Click Publish');
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('XHR network error');
+                showError('❌ Network error. Make sure your sheet is published:<br>1. File → Share → Publish to web<br>2. Choose "CSV" format<br>3. Click Publish');
+            };
+
+            xhr.send();
+        }
+
+        // Fallback method using Papa Parse download (kept for reference but not used)
+        function tryPapaParseMethod(csvUrl) {
+            showError('Loading data from Google Sheets...');
+            console.log('Attempting to load CSV with PapaParse from:', csvUrl);
+
+            Papa.parse(csvUrl, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    console.log('Papa Parse complete. Results:', results);
+                    try {
+                        if (results.errors && results.errors.length > 0) {
+                            console.error('Papa Parse errors:', results.errors);
+                            showError('Parse errors: ' + JSON.stringify(results.errors[0]));
+                            return;
+                        }
+                        if (!results.data || results.data.length === 0) {
+                            console.error('No data in results');
+                            showError('No data found. Please make sure your sheet is published to the web (File → Share → Publish to web → CSV)');
+                            return;
+                        }
+                        console.log('Processing data with', results.data.length, 'rows');
+                        console.log('First row:', results.data[0]);
+                        processData(results.data);
+                        showError('');
+                    } catch (error) {
+                        console.error('Error processing data:', error);
+                        showError(error.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Papa Parse error:', error);
+                    showError('❌ Failed to load: ' + (error.message || error) + '<br><br>You must PUBLISH your sheet to the web:<br>1. File → Share → Publish to web<br>2. Choose "CSV" format<br>3. Click Publish<br>4. Use that published URL here');
+                }
+            });
+        }
+
+        // Button click handler
+        document.getElementById('loadSheets').addEventListener('click', function() {
+            loadGoogleSheet();
+        });
+
+        // Auto-load default sheet on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            if (DEFAULT_SHEETS_URL) {
+                document.getElementById('sheetsUrl').value = DEFAULT_SHEETS_URL;
+                loadGoogleSheet(DEFAULT_SHEETS_URL);
+            }
+        });
+
+        // File upload handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                Papa.parse(file, {
+                    header: true,
+                    complete: function(results) {
+                        try {
+                            processData(results.data);
+                            showError('');
+                        } catch (error) {
+                            showError(error.message);
+                        }
+                    },
+                    error: function(error) {
+                        showError('Error parsing CSV: ' + error.message);
+                    }
+                });
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            if (message) {
+                errorDiv.innerHTML = message; // Changed to innerHTML to support HTML formatting
+                errorDiv.classList.remove('hidden');
+            } else {
+                errorDiv.classList.add('hidden');
+            }
+        }
+
+        function processData(data) {
+            // Find question columns - exclude Timestamp and Score columns
+            const allColumns = Object.keys(data[0]);
+            questions = allColumns.filter(col => {
+                const lower = col.toLowerCase();
+                return !lower.includes('timestamp') &&
+                       !lower.includes('score') &&
+                       col.trim() !== '';
+            });
+
+            if (questions.length < 2) {
+                throw new Error('Need at least 2 question columns in the CSV');
+            }
+
+            // Filter out empty rows
+            surveyData = data.filter(row => {
+                return questions.some(q => row[q] && row[q].trim() !== '');
+            });
+
+            if (surveyData.length === 0) {
+                throw new Error('No valid data found in CSV');
+            }
+
+            // Validate Likert scale values
+            for (let row of surveyData) {
+                for (let q of questions) {
+                    const value = row[q];
+                    if (value && value.trim() !== '' && !(value in likertMapping)) {
+                        throw new Error(`Invalid Likert value "${value}" in column ${q}. Expected: ${likertLabels.join(', ')}`);
+                    }
+                }
+            }
+
+            initializeControls();
+            updateStats();
+            updatePlot();
+        }
+
+        function initializeControls() {
+            const xSelect = document.getElementById('xAxis');
+            const ySelect = document.getElementById('yAxis');
+            const xSelectBottom = document.getElementById('xAxisBottom');
+            const ySelectBottom = document.getElementById('yAxisBottom');
+
+            // Clear existing options
+            xSelect.innerHTML = '';
+            ySelect.innerHTML = '';
+            xSelectBottom.innerHTML = '';
+            ySelectBottom.innerHTML = '';
+
+            // Create short labels for each question
+            questions.forEach((q, idx) => {
+                questionLabels[idx] = createShortLabel(q, idx);
+            });
+
+            // Add options with short labels but store full question text
+            questions.forEach((q, idx) => {
+                // Top controls
+                const xOption = document.createElement('option');
+                xOption.value = idx;
+                xOption.textContent = questionLabels[idx];
+                xOption.title = q; // Full text on hover
+                xSelect.appendChild(xOption);
+
+                const yOption = document.createElement('option');
+                yOption.value = idx;
+                yOption.textContent = questionLabels[idx];
+                yOption.title = q; // Full text on hover
+                ySelect.appendChild(yOption);
+
+                // Bottom controls (duplicates)
+                const xOptionBottom = document.createElement('option');
+                xOptionBottom.value = idx;
+                xOptionBottom.textContent = questionLabels[idx];
+                xOptionBottom.title = q;
+                xSelectBottom.appendChild(xOptionBottom);
+
+                const yOptionBottom = document.createElement('option');
+                yOptionBottom.value = idx;
+                yOptionBottom.textContent = questionLabels[idx];
+                yOptionBottom.title = q;
+                ySelectBottom.appendChild(yOptionBottom);
+            });
+
+            // Set default selection (Q1 for x, Q2 for y)
+            xSelect.value = 0;
+            ySelect.value = Math.min(1, questions.length - 1);
+            xSelectBottom.value = 0;
+            ySelectBottom.value = Math.min(1, questions.length - 1);
+
+            // Show controls
+            document.getElementById('controlsSection').classList.remove('hidden');
+            document.getElementById('statsSection').classList.remove('hidden');
+            document.getElementById('controlsSectionBottom').classList.remove('hidden');
+
+            // Add event listeners to sync both sets of controls
+            xSelect.addEventListener('change', function() {
+                xSelectBottom.value = this.value;
+                updatePlot();
+            });
+            ySelect.addEventListener('change', function() {
+                ySelectBottom.value = this.value;
+                updatePlot();
+            });
+            xSelectBottom.addEventListener('change', function() {
+                xSelect.value = this.value;
+                updatePlot();
+            });
+            ySelectBottom.addEventListener('change', function() {
+                ySelect.value = this.value;
+                updatePlot();
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('totalResponses').textContent = surveyData.length;
+            document.getElementById('totalQuestions').textContent = questions.length;
+
+            // Calculate valid pairs for current selection
+            const xIdx = parseInt(document.getElementById('xAxis').value) || 0;
+            const yIdx = parseInt(document.getElementById('yAxis').value) || 1;
+            const xQuestion = questions[xIdx];
+            const yQuestion = questions[yIdx];
+
+            const validPairs = surveyData.filter(row =>
+                row[xQuestion] && row[xQuestion].trim() !== '' &&
+                row[yQuestion] && row[yQuestion].trim() !== ''
+            ).length;
+
+            document.getElementById('validPairs').textContent = validPairs;
+        }
+
+        function updatePlot() {
+            const xIdx = parseInt(document.getElementById('xAxis').value);
+            const yIdx = parseInt(document.getElementById('yAxis').value);
+
+            if (xIdx === yIdx) {
+                showError('Please select different questions for X and Y axes');
+                return;
+            }
+
+            showError('');
+
+            const xQuestion = questions[xIdx];
+            const yQuestion = questions[yIdx];
+
+            // Extract data and add jitter
+            const xData = [];
+            const yData = [];
+            const hoverText = [];
+
+            surveyData.forEach((row, idx) => {
+                const xValue = row[xQuestion];
+                const yValue = row[yQuestion];
+
+                if (xValue && yValue && xValue.trim() !== '' && yValue.trim() !== '') {
+                    const xNumeric = likertMapping[xValue];
+                    const yNumeric = likertMapping[yValue];
+
+                    if (xNumeric !== undefined && yNumeric !== undefined) {
+                        // Add jitter
+                        const jitter = 0.15;
+                        xData.push(xNumeric + (Math.random() - 0.5) * jitter);
+                        yData.push(yNumeric + (Math.random() - 0.5) * jitter);
+
+                        // Create concise hover text
+                        const xShort = xQuestion.length > 50 ? xQuestion.substring(0, 50) + '...' : xQuestion;
+                        const yShort = yQuestion.length > 50 ? yQuestion.substring(0, 50) + '...' : yQuestion;
+                        hoverText.push(`<b>Response ${idx + 1}</b><br><br>${xShort}<br><b>${xValue}</b><br><br>${yShort}<br><b>${yValue}</b>`);
+                    }
+                }
+            });
+
+            // Data trace for scatter points
+            const trace = {
+                x: xData,
+                y: yData,
+                mode: 'markers',
+                type: 'scatter',
+                text: hoverText,
+                hoverinfo: 'text',
+                marker: {
+                    size: 10,
+                    color: '#667eea',
+                    opacity: 0.6,
+                    line: {
+                        color: '#333',
+                        width: 1
+                    }
+                },
+                name: 'Responses'
+            };
+
+            // Add 1:1 diagonal line (y = x)
+            const diagonalLine = {
+                x: [-0.5, 4.5],
+                y: [-0.5, 4.5],
+                mode: 'lines',
+                type: 'scatter',
+                line: {
+                    color: '#dc2626',
+                    width: 2,
+                    dash: 'dash'
+                },
+                name: '1:1 Match',
+                hoverinfo: 'name'
+            };
+
+            // Check if there are zones defined for this question pair
+            const zones = findZonesForQuestions(xQuestion, yQuestion);
+            const shapes = [];
+            const annotations = [];
+
+            if (zones) {
+                zones.forEach(zone => {
+                    // Determine if this is upper or lower zone based on test points
+                    const isUpper = zone.condition(1, 3); // Point above diagonal
+
+                    if (isUpper) {
+                        // Upper triangle (above diagonal with gap)
+                        shapes.push({
+                            type: 'path',
+                            path: 'M -0.5,-0.2 L 4.5,4.8 L -0.5,4.5 Z',
+                            fillcolor: zone.color,
+                            line: { width: 0 },
+                            layer: 'below'
+                        });
+                    } else {
+                        // Lower triangle (below diagonal with gap)
+                        shapes.push({
+                            type: 'path',
+                            path: 'M -0.5,-0.5 L 4.5,-0.5 L 4.8,4.5 Z',
+                            fillcolor: zone.color,
+                            line: { width: 0 },
+                            layer: 'below'
+                        });
+                    }
+
+                    // Add text annotation for zone label
+                    annotations.push({
+                        x: zone.textPosition.x,
+                        y: zone.textPosition.y,
+                        text: zone.name,
+                        showarrow: false,
+                        font: {
+                            size: 16,
+                            color: '#333',
+                            family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                            weight: 'bold'
+                        },
+                        bgcolor: 'rgba(255, 255, 255, 0.7)',
+                        borderpad: 8,
+                        bordercolor: '#999',
+                        borderwidth: 1
+                    });
+                });
+            }
+
+            const layout = {
+                shapes: shapes,
+                annotations: annotations,
+                title: {
+                    text: `Question Comparison`,
+                    font: { size: 24, weight: 'bold' }
+                },
+                xaxis: {
+                    title: {
+                        text: xQuestion,
+                        font: { size: 16 }
+                    },
+                    tickmode: 'array',
+                    tickvals: [0, 1, 2, 3, 4],
+                    ticktext: likertLabels,
+                    range: [-0.5, 4.5],
+                    gridcolor: '#e0e0e0',
+                    tickangle: -45,
+                    tickfont: { size: 14 },
+                    scaleanchor: 'y',
+                    scaleratio: 1,
+                    constrain: 'domain'
+                },
+                yaxis: {
+                    title: {
+                        text: yQuestion,
+                        font: { size: 16 }
+                    },
+                    tickmode: 'array',
+                    tickvals: [0, 1, 2, 3, 4],
+                    ticktext: likertLabels,
+                    range: [-0.5, 4.5],
+                    gridcolor: '#e0e0e0',
+                    tickfont: { size: 14 },
+                    constrain: 'domain'
+                },
+                plot_bgcolor: '#fafafa',
+                paper_bgcolor: 'white',
+                font: {
+                    family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                },
+                hovermode: 'closest',
+                margin: { t: 60, r: 40, b: 150, l: 250 },
+                showlegend: false
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: false,
+                staticPlot: false
+            };
+
+            Plotly.newPlot('plot', [trace, diagonalLine], layout, config);
+            updateStats();
+        }
+    </script>
+</body>
+</html>
