@@ -446,12 +446,14 @@ document.addEventListener('DOMContentLoaded', function() {
                      <p><strong>Worst case scenario:</strong> ${grades.worst.letter} (if all remaining SLOs = 0.0)</p>
                      <p><strong>Current trajectory:</strong> ${grades.current.letter} (based only on evaluated SLOs)</p>`
                 }
-                ${showLabWarning ? `
+                ${hasLowLabSLO ? `
                 <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid var(--warning-color); border-radius: 4px;">
-                    <strong>⚠️ Important Note:</strong> ${hasLowLabSLO ?
-                        `You have ${stats.current.totalEvaluatedLab === 1 ? 'only one' : 'only a few'} lab SLO${stats.current.totalEvaluatedLab === 1 ? '' : 's'} evaluated so far (lowest: ${stats.current.minLabSLO.toFixed(1)}). ` :
-                        `You have ${stats.current.totalEvaluatedPhysics === 1 ? 'only one' : 'only a few'} physics SLO${stats.current.totalEvaluatedPhysics === 1 ? '' : 's'} evaluated so far (lowest: ${stats.current.minPhysicsSLO.toFixed(1)}). `
-                    }Lab and physics SLOs use a <strong>decaying average</strong> where your most recent scores count more than earlier attempts. ${hasLowLabSLO && stats.current.totalEvaluatedLab <= 2 ? 'With more lab assessments, improved performance will significantly raise your grade.' : 'Improvement on future assessments will have a strong positive impact on your final grade.'}
+                    <strong>⚠️ Lab SLO Note:</strong> You have only ${stats.current.totalEvaluatedLab === 1 ? 'one lab SLO' : `${stats.current.totalEvaluatedLab} lab SLOs`} evaluated so far (lowest: ${stats.current.minLabSLO.toFixed(1)}). Lab SLOs use a <strong>decaying average</strong> — your most recent scores count more than earlier ones. Improved performance on future labs will significantly raise this score.
+                </div>
+                ` : ''}
+                ${hasLowPhysicsSLO ? `
+                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid var(--warning-color); border-radius: 4px;">
+                    <strong>⚠️ Physics SLO Note:</strong> You have only ${stats.current.totalEvaluatedPhysics === 1 ? 'one physics SLO' : `${stats.current.totalEvaluatedPhysics} physics SLOs`} evaluated so far (lowest: ${stats.current.minPhysicsSLO.toFixed(1)}). Physics SLOs use a <strong>decaying average</strong> — your most recent scores count more than earlier ones. Improved performance on future assessments will significantly raise this score.
                 </div>
                 ` : ''}
             `;
