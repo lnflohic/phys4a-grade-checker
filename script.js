@@ -99,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
             minLabSLO: evaluatedLab.length > 0 ? Math.min(...evaluatedLab.filter(s => s > 0)) : Infinity,
             totalEvaluatedPhysics: evaluatedPhysics.length,
             totalEvaluatedLab: evaluatedLab.length,
-            totalPhysics: 12,
-            totalLab: 5
+            totalPhysics: 13,
+            totalLab: 4
         };
 
         // Calculate best case and worst case scenarios
@@ -142,10 +142,10 @@ document.addEventListener('DOMContentLoaded', function() {
             minSLO: Math.min(...[...bestPhysics, ...bestLab]),
             minPhysicsSLO: Math.min(...bestPhysics),
             minLabSLO: Math.min(...bestLab),
-            totalEvaluatedPhysics: 12,
-            totalEvaluatedLab: 5,
-            totalPhysics: 12,
-            totalLab: 5
+            totalEvaluatedPhysics: 13,
+            totalEvaluatedLab: 4,
+            totalPhysics: 13,
+            totalLab: 4
         };
     }
 
@@ -168,10 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
             minSLO: Math.min(...[...worstPhysics, ...worstLab].filter(s => s >= 0)),
             minPhysicsSLO: worstPhysics.length > 0 ? Math.min(...worstPhysics.filter(s => s >= 0)) : 0,
             minLabSLO: worstLab.length > 0 ? Math.min(...worstLab.filter(s => s >= 0)) : 0,
-            totalEvaluatedPhysics: 12,
-            totalEvaluatedLab: 5,
-            totalPhysics: 12,
-            totalLab: 5
+            totalEvaluatedPhysics: 13,
+            totalEvaluatedLab: 4,
+            totalPhysics: 13,
+            totalLab: 4
         };
     }
 
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.scrollIntoView({ behavior: 'smooth' });
 
         // Calculate completion percentage
-        const totalSLOs = 12 + 5; // physics + lab
+        const totalSLOs = 13 + 4; // physics + lab
         const evaluatedSLOs = stats.current.totalEvaluatedPhysics + stats.current.totalEvaluatedLab;
         const completionPercent = Math.round((evaluatedSLOs / totalSLOs) * 100);
 
@@ -436,11 +436,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasLowPhysicsSLO = stats.current.minPhysicsSLO < 1.5 && stats.current.totalEvaluatedPhysics < 12;
             const showLabWarning = hasLowLabSLO || hasLowPhysicsSLO;
 
-            const projClass = grades.best.letter === grades.worst.letter ? 'projection-best' : '';
+            const lockedIn = grades.best.letter === grades.worst.letter && grades.best.letter !== 'F';
+            const projClass = lockedIn ? 'projection-best' : '';
             projectionInfo.className = `projection-info ${projClass}`;
             projectionInfo.innerHTML = `
                 <h3>📊 Grade Projections (${100 - completionPercent}% of SLOs remaining)</h3>
-                ${grades.best.letter === grades.worst.letter ?
+                ${lockedIn ?
                     `<p><strong>Your grade will be: ${grades.best.letter}</strong> (regardless of remaining SLO scores)</p>` :
                     `<p><strong>Best case scenario:</strong> ${grades.best.letter} (if all remaining SLOs = 3.0)</p>
                      <p><strong>Worst case scenario:</strong> ${grades.worst.letter} (if all remaining SLOs = 0.0)</p>
