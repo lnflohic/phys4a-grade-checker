@@ -239,37 +239,6 @@ h3 {
     transform: translateY(0);
 }
 
-.grade-display {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--white);
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: var(--shadow-lg);
-}
-
-.progress-indicator {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    display: inline-block;
-}
-
-.grade-letter {
-    font-size: 5rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.grade-description {
-    font-size: 1.2rem;
-    opacity: 0.95;
-}
-
 
 .checklist-container {
     display: grid;
@@ -419,10 +388,6 @@ footer p {
 
     .slo-grid {
         grid-template-columns: 1fr;
-    }
-
-    .grade-letter {
-        font-size: 4rem;
     }
 
     .stat-grid {

@@ -564,19 +564,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth' });
 
-        // Calculate completion percentage
-        const totalSLOs = 13 + 4; // physics + lab
-        const evaluatedSLOs = stats.current.totalEvaluatedPhysics + stats.current.totalEvaluatedLab;
-        const completionPercent = Math.round((evaluatedSLOs / totalSLOs) * 100);
-
-        // Display progress indicator
-        const progressIndicator = document.getElementById('progressIndicator');
-        progressIndicator.textContent = `${completionPercent}% of SLOs Evaluated (${evaluatedSLOs}/${totalSLOs})`;
-
-        // Display current grade
-        document.getElementById('gradeLetter').textContent = grades.current.letter;
-        document.getElementById('gradeDescription').textContent = grades.current.description;
-
         // Display improvement section (two-tone: urgent vs encouraging)
         const improvementSection = document.getElementById('improvementSection');
         const physicsRemaining = Math.max(0, 15 - CURRENT_WEEK);
