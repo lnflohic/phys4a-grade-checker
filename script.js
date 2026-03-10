@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateBtn.addEventListener('click', calculateGrade);
     resetBtn.addEventListener('click', resetForm);
 
+    // Current week — update each semester (Spring 2026 = week 7 at time of release)
+    const CURRENT_WEEK = 7;
+
     // SLO names for improvement messages
     const physicsSLONames = [
         'Apply a problem-solving strategy',
@@ -93,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const labSLOs = getScores('.lab-slo', '.lab-na');
         const behaviorSLOs = getScores('.behavior-slo', '.behavior-na');
 
-        const currentWeek = parseInt(document.getElementById('currentWeek').value) || 7;
         const labsMissed = parseInt(document.getElementById('labsMissed').value) || 0;
 
         const projectNA = document.getElementById('projectNA').checked;
@@ -145,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             current: currentStats,
             best: bestCaseStats,
             worst: worstCaseStats
-        }, physicsSLOs, labSLOs, currentWeek);
+        }, physicsSLOs, labSLOs);
     }
 
     function calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats) {
@@ -435,7 +437,79 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function displayResults(grades, stats, physicsSLOs, labSLOs, currentWeek) {
+    // Returns array of human-readable strings describing unmet requirements for a target grade
+    function getUnmetRequirements(targetGrade, stats) {
+        const isNA = (val) => val === null || val === undefined;
+        const numPhysics = stats.totalEvaluatedPhysics;
+        const numLab = stats.totalEvaluatedLab;
+        const unmet = [];
+
+        if (targetGrade === 'A') {
+            if (numPhysics > 0) {
+                const sf2 = numPhysics - stats.physicsSLOsAbove2;
+                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const need2_5 = Math.ceil(numPhysics * (8 / 12));
+                const sf2_5 = need2_5 - stats.physicsSLOsAbove2_5;
+                if (sf2_5 > 0) unmet.push(`${sf2_5} more physics SLO${sf2_5 > 1 ? 's' : ''} must reach ≥2.5`);
+            }
+            if (numLab > 0) {
+                const needL2 = Math.ceil(numLab * (3 / 5));
+                const sfL2 = needL2 - stats.labSLOsAbove2;
+                if (sfL2 > 0) unmet.push(`${sfL2} more lab SLO${sfL2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const needL2_5 = Math.ceil(numLab * (2 / 5));
+                const sfL2_5 = needL2_5 - stats.labSLOsAbove2_5;
+                if (sfL2_5 > 0) unmet.push(`${sfL2_5} more lab SLO${sfL2_5 > 1 ? 's' : ''} must reach ≥2.5`);
+            }
+            if (stats.labsMissed > 1) unmet.push(`labs missed (${stats.labsMissed}) must be ≤1`);
+        } else if (targetGrade === 'B') {
+            if (numPhysics > 0) {
+                const need2 = Math.ceil(numPhysics * (9 / 12));
+                const sf2 = need2 - stats.physicsSLOsAbove2;
+                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const need2_5 = Math.ceil(numPhysics * (4 / 12));
+                const sf2_5 = need2_5 - stats.physicsSLOsAbove2_5;
+                if (sf2_5 > 0) unmet.push(`${sf2_5} more physics SLO${sf2_5 > 1 ? 's' : ''} must reach ≥2.5`);
+            }
+            if (!isNA(stats.minSLO) && isFinite(stats.minSLO) && stats.minSLO < 1.7) {
+                unmet.push(`raise lowest SLO above 1.7 (currently ${stats.minSLO.toFixed(1)})`);
+            }
+            if (stats.labsMissed > 2) unmet.push(`labs missed (${stats.labsMissed}) must be ≤2`);
+        } else if (targetGrade === 'C') {
+            if (numPhysics > 0) {
+                const need2 = Math.ceil(numPhysics * (6 / 12));
+                const sf2 = need2 - stats.physicsSLOsAbove2;
+                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+            }
+            if (numLab > 0) {
+                const needL2 = Math.ceil(numLab * (2 / 5));
+                const sfL2 = needL2 - stats.labSLOsAbove2;
+                if (sfL2 > 0) unmet.push(`${sfL2} more lab SLO${sfL2 > 1 ? 's' : ''} must reach ≥2.0`);
+            }
+            if (isFinite(stats.minPhysicsSLO) && stats.minPhysicsSLO < 1.5) {
+                unmet.push(`raise lowest physics SLO above 1.5 (currently ${stats.minPhysicsSLO.toFixed(1)})`);
+            }
+            if (isFinite(stats.minLabSLO) && stats.minLabSLO < 1.5) {
+                unmet.push(`raise lowest lab SLO above 1.5 (currently ${stats.minLabSLO.toFixed(1)})`);
+            }
+            if (stats.labsMissed > 3) unmet.push(`labs missed (${stats.labsMissed}) must be ≤3`);
+        } else if (targetGrade === 'D') {
+            if (numPhysics > 0) {
+                const need2 = Math.ceil(numPhysics * (4 / 12));
+                const sf2 = need2 - stats.physicsSLOsAbove2;
+                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+            }
+            if (isFinite(stats.minPhysicsSLO) && stats.minPhysicsSLO < 1.3) {
+                unmet.push(`raise lowest physics SLO above 1.3 (currently ${stats.minPhysicsSLO.toFixed(1)})`);
+            }
+            if (isFinite(stats.minLabSLO) && stats.minLabSLO < 1.3) {
+                unmet.push(`raise lowest lab SLO above 1.3 (currently ${stats.minLabSLO.toFixed(1)})`);
+            }
+            if (stats.labsMissed > 4) unmet.push(`labs missed (${stats.labsMissed}) must be ≤4`);
+        }
+        return unmet;
+    }
+
+    function displayResults(grades, stats, physicsSLOs, labSLOs) {
         // Show results section
         resultsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -488,44 +562,144 @@ document.addEventListener('DOMContentLoaded', function() {
             projectionInfo.style.display = 'none';
         }
 
-        // Display improvement opportunities for SLOs below 2.0
+        // Display improvement section (two-tone: urgent vs encouraging)
         const improvementSection = document.getElementById('improvementSection');
-        const physicsRemaining = Math.max(0, 15 - currentWeek);
-        const labRemaining = Math.max(0, 14 - currentWeek);
+        const physicsRemaining = Math.max(0, 15 - CURRENT_WEEK);
+        const labRemaining = Math.max(0, 14 - CURRENT_WEEK);
+        const gradeLockedIn = grades.best.letter === grades.worst.letter && grades.best.letter !== 'F';
 
-        const physicsOpportunities = [];
+        // --- 1. Urgent: SLOs < 1.3 triggering a failing condition (always shown) ---
+        const urgentItems = [];
         physicsSLOs.forEach((score, index) => {
-            if (score !== null && score < 2.0 && physicsRemaining > 0) {
-                const chanceWord = physicsRemaining === 1 ? 'chance' : 'chances';
-                physicsOpportunities.push(
+            if (score !== null && score < 1.3 && physicsRemaining > 0) {
+                const n = physicsRemaining, w = n === 1 ? 'chance' : 'chances';
+                urgentItems.push(
                     `<li><strong>${physicsSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
-                    `You still have <strong>${physicsRemaining} ${chanceWord}</strong> to improve this score.</li>`
+                    `This score is currently triggering a <strong>failing condition</strong> — ` +
+                    `bringing it above 1.3 is your first priority. ` +
+                    `You still have <strong>${n} ${w}</strong> to improve it.</li>`
                 );
             }
         });
-
-        const labOpportunities = [];
         labSLOs.forEach((score, index) => {
-            if (score !== null && score < 2.0 && labRemaining > 0) {
-                const chanceWord = labRemaining === 1 ? 'chance' : 'chances';
-                labOpportunities.push(
+            if (score !== null && score < 1.3 && labRemaining > 0) {
+                const n = labRemaining, w = n === 1 ? 'chance' : 'chances';
+                urgentItems.push(
                     `<li><strong>${labSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
-                    `You still have up to <strong>${labRemaining} ${chanceWord}</strong> to improve, ` +
-                    `and 40% of the grade will come from the practicum, so keep on honing your skills!</li>`
+                    `This score is currently triggering a <strong>failing condition</strong> — ` +
+                    `bringing it above 1.3 is your first priority. ` +
+                    `You still have up to <strong>${n} ${w}</strong> to improve it, ` +
+                    `and 40% of the grade will come from the practicum.</li>`
                 );
             }
         });
 
-        const allOpportunities = [...physicsOpportunities, ...labOpportunities];
-        if (allOpportunities.length > 0) {
-            improvementSection.innerHTML = `
-                <div style="margin: 15px 0; padding: 15px 18px; background: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; border-radius: 6px;">
+        // --- 2. Encouraging: SLOs 1.3–1.99 (only when grade can still improve) ---
+        const encouragingItems = [];
+        if (!gradeLockedIn) {
+            physicsSLOs.forEach((score, index) => {
+                if (score !== null && score >= 1.3 && score < 2.0 && physicsRemaining > 0) {
+                    const n = physicsRemaining, w = n === 1 ? 'chance' : 'chances';
+                    let msg = `<li><strong>${physicsSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
+                              `You still have <strong>${n} ${w}</strong> to improve this score.`;
+                    if (score < 1.5) {
+                        msg += ` With Canvas's decaying average, strong future performances count more than early results — don't give up on this one!`;
+                    }
+                    encouragingItems.push(msg + `</li>`);
+                }
+            });
+            labSLOs.forEach((score, index) => {
+                if (score !== null && score >= 1.3 && score < 2.0 && labRemaining > 0) {
+                    const n = labRemaining, w = n === 1 ? 'chance' : 'chances';
+                    let msg = `<li><strong>${labSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
+                              `You still have up to <strong>${n} ${w}</strong> to improve, ` +
+                              `and 40% of the grade will come from the practicum, so keep on honing your skills!`;
+                    if (score < 1.5) {
+                        msg += ` With Canvas's decaying average, your next lab session counts more — each one is a fresh start.`;
+                    }
+                    encouragingItems.push(msg + `</li>`);
+                }
+            });
+        }
+
+        // --- 3. "X SLOs need attention to reach an A" summary ---
+        let aSummary = '';
+        if (grades.best.letter === 'A' && grades.current.letter !== 'A') {
+            const parts = [];
+            const physBelow2   = physicsSLOs.filter(s => s !== null && s < 2.0).length;
+            const physBelow2_5 = physicsSLOs.filter(s => s !== null && s >= 2.0 && s < 2.5).length;
+            const labBelow2    = labSLOs.filter(s => s !== null && s < 2.0).length;
+            const labBelow2_5  = labSLOs.filter(s => s !== null && s >= 2.0 && s < 2.5).length;
+            if (physBelow2   > 0) parts.push(`${physBelow2} physics SLO${physBelow2 > 1 ? 's' : ''} below 2.0 need to reach ≥2.0`);
+            if (physBelow2_5 > 0) parts.push(`${physBelow2_5} physics SLO${physBelow2_5 > 1 ? 's' : ''} between 2.0–2.5 could be pushed to ≥2.5`);
+            if (labBelow2    > 0) parts.push(`${labBelow2} lab SLO${labBelow2 > 1 ? 's' : ''} below 2.0 need attention`);
+            if (labBelow2_5  > 0) parts.push(`${labBelow2_5} lab SLO${labBelow2_5 > 1 ? 's' : ''} between 2.0–2.5 could reach ≥2.5`);
+            if (parts.length > 0) {
+                aSummary = `<p>🎯 <strong>Path to an A:</strong> Among your graded SLOs — ${parts.join('; ')}.</p>`;
+            }
+        }
+
+        // --- 4. Specific grade-distance message (what's needed for next grade up) ---
+        let gradeDistanceMsg = '';
+        if (!gradeLockedIn) {
+            const gradeOrder = ['A', 'B', 'C', 'D', 'F'];
+            const currentIdx = gradeOrder.indexOf(grades.current.letter);
+            const bestIdx    = gradeOrder.indexOf(grades.best.letter);
+            if (bestIdx < currentIdx && currentIdx > 0) {
+                const targetGrade = gradeOrder[currentIdx - 1];
+                const unmet = getUnmetRequirements(targetGrade, stats.current);
+                if (unmet.length > 0) {
+                    gradeDistanceMsg = `<p>📈 <strong>Path to a ${targetGrade}:</strong> Based on your current scores: ${unmet.join('; ')}.</p>`;
+                }
+            }
+        }
+
+        // --- 5. Missed labs warning ---
+        let labsMissedWarning = '';
+        const lm = stats.current.labsMissed;
+        if (lm >= 4) {
+            labsMissedWarning = `<p>🚨 <strong>Lab attendance critical:</strong> You've missed ${lm} lab${lm > 1 ? 's' : ''} — one more missed lab triggers an F condition. Attendance is essential!</p>`;
+        } else if (lm === 3) {
+            labsMissedWarning = `<p>⚠️ <strong>Lab attendance:</strong> You've missed 3 labs. Missing any more puts your C-level standing at risk.</p>`;
+        } else if (lm === 2) {
+            labsMissedWarning = `<p>⚠️ <strong>Lab attendance:</strong> You've missed 2 labs — at the B-grade limit. One more missed lab would affect your grade.</p>`;
+        } else if (lm === 1) {
+            labsMissedWarning = `<p>💡 <strong>Lab attendance:</strong> You've missed 1 lab. To stay on track for an A, don't miss any more.</p>`;
+        }
+
+        // --- 6. Worst-case-still-passing encouragement ---
+        let worstCaseMsg = '';
+        if (!gradeLockedIn && grades.worst.letter !== 'F') {
+            worstCaseMsg = `<p>✅ <strong>Solid foundation:</strong> Even if all your remaining SLOs score 0.0, you're on track to pass with at least a <strong>${grades.worst.letter}</strong>.</p>`;
+        }
+
+        // --- Assemble the section ---
+        const hasContent = urgentItems.length > 0 || encouragingItems.length > 0 ||
+                           aSummary || gradeDistanceMsg || labsMissedWarning || worstCaseMsg;
+        if (hasContent) {
+            let html = '';
+            if (urgentItems.length > 0) {
+                html += `
+                <div style="margin: 12px 0; padding: 14px 16px; background: rgba(244,67,54,0.08); border-left: 4px solid #f44336; border-radius: 6px;">
+                    <strong>🚨 Urgent — Failing Conditions to Address:</strong>
+                    <ul style="margin: 8px 0 0 0; padding-left: 20px; line-height: 1.9;">${urgentItems.join('')}</ul>
+                </div>`;
+            }
+            if (encouragingItems.length > 0) {
+                html += `
+                <div style="margin: 12px 0; padding: 14px 16px; background: rgba(76,175,80,0.08); border-left: 4px solid #4caf50; border-radius: 6px;">
                     <strong>💡 Opportunities to Improve:</strong>
-                    <ul style="margin: 10px 0 0 0; padding-left: 20px; line-height: 1.9;">
-                        ${allOpportunities.join('')}
-                    </ul>
-                </div>
-            `;
+                    <ul style="margin: 8px 0 0 0; padding-left: 20px; line-height: 1.9;">${encouragingItems.join('')}</ul>
+                </div>`;
+            }
+            const infoItems = [aSummary, gradeDistanceMsg, labsMissedWarning, worstCaseMsg].filter(Boolean);
+            if (infoItems.length > 0) {
+                html += `
+                <div style="margin: 12px 0; padding: 14px 16px; background: rgba(33,150,243,0.08); border-left: 4px solid #2196f3; border-radius: 6px;">
+                    ${infoItems.join('')}
+                </div>`;
+            }
+            improvementSection.innerHTML = html;
             improvementSection.style.display = 'block';
         } else {
             improvementSection.innerHTML = '';
@@ -616,11 +790,9 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.checked = true;
         });
 
-        // Set defaults for labs missed and current week (not disabled)
+        // Set defaults for labs missed (not disabled)
         document.getElementById('labsMissed').value = '0';
         document.getElementById('labsMissed').disabled = false;
-        const cwInput = document.getElementById('currentWeek');
-        if (cwInput) { cwInput.disabled = false; }
 
         // Hide results
         resultsSection.style.display = 'none';
