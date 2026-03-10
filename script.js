@@ -437,6 +437,56 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // Returns requirements for all four letter grades (for the progress grid)
+    function getAllGradeRequirements(stats) {
+        const isNA = (val) => val === null || val === undefined;
+        const numPhysics = stats.totalEvaluatedPhysics;
+        const numLab    = stats.totalEvaluatedLab;
+        const skipPhysics  = numPhysics === 0;
+        const skipLab      = numLab === 0;
+        const skipBehavior = isNA(stats.behaviorSLOsAbove2);
+
+        const p2label  = skipPhysics ? 'All physics SLOs ≥2.0' : `All ${numPhysics} physics SLOs ≥2.0`;
+        const p25label = skipPhysics ? '2/3 physics SLOs ≥2.5'
+            : `${Math.ceil(numPhysics * (8/12))}/${numPhysics} physics SLOs ≥2.5`;
+
+        return {
+            A: [
+                { label: p2label,  met: skipPhysics ? null : stats.physicsSLOsAbove2 >= numPhysics, skip: skipPhysics },
+                { label: p25label, met: skipPhysics ? null : stats.physicsSLOsAbove2_5 >= Math.ceil(numPhysics * (8/12)), skip: skipPhysics },
+                { label: skipLab ? '3/4 lab SLOs ≥2.0' : `${Math.ceil(numLab * (3/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (3/5)), skip: skipLab },
+                { label: skipLab ? '2/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (2/5)), skip: skipLab },
+                { label: 'Missed ≤1 lab', met: stats.labsMissed <= 1, skip: false },
+                { label: 'Behavior SLOs ≥2.0', met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 2, skip: skipBehavior },
+                { label: 'All project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 3, skip: isNA(stats.projectSLOs) },
+                { label: '1/3 project SLOs =3.0', met: !isNA(stats.projectSLOs3) && stats.projectSLOs3 >= 1, skip: isNA(stats.projectSLOs3) },
+                { label: '≥2.0 on concept matching', met: !isNA(stats.conceptMatching) && stats.conceptMatching >= 2.0, skip: isNA(stats.conceptMatching) },
+            ],
+            B: [
+                { label: skipPhysics ? '3/4 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (9/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (9/12)), skip: skipPhysics },
+                { label: skipPhysics ? '1/3 physics SLOs ≥2.5' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥2.5`, met: skipPhysics ? null : stats.physicsSLOsAbove2_5 >= Math.ceil(numPhysics * (4/12)), skip: skipPhysics },
+                { label: skipLab ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)), skip: skipLab },
+                { label: skipLab ? '1/5 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/5)), skip: skipLab },
+                { label: 'No SLO <1.7', met: (skipPhysics && skipLab) ? null : stats.minSLO >= 1.7, skip: skipPhysics && skipLab },
+                { label: 'Missed ≤2 labs', met: stats.labsMissed <= 2, skip: false },
+                { label: '1 behavior SLO ≥2.0', met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 1, skip: skipBehavior },
+                { label: '2/3 project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 2, skip: isNA(stats.projectSLOs) },
+            ],
+            C: [
+                { label: skipPhysics ? '1/2 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (6/12)), skip: skipPhysics },
+                { label: skipLab ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)), skip: skipLab },
+                { label: 'No physics/lab SLO <1.5', met: (skipPhysics && skipLab) ? null : stats.minPhysicsSLO >= 1.5 && stats.minLabSLO >= 1.5, skip: skipPhysics && skipLab },
+                { label: 'Missed ≤3 labs', met: stats.labsMissed <= 3, skip: false },
+            ],
+            D: [
+                { label: skipPhysics ? '1/3 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (4/12)), skip: skipPhysics },
+                { label: 'No physics/lab SLO <1.3', met: (skipPhysics && skipLab) ? null : stats.minPhysicsSLO >= 1.3 && stats.minLabSLO >= 1.3, skip: skipPhysics && skipLab },
+                { label: skipLab ? '1/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (1/5)), skip: skipLab },
+                { label: 'Missed ≤4 labs', met: stats.labsMissed <= 4, skip: false },
+            ]
+        };
+    }
+
     // Returns array of human-readable strings describing unmet requirements for a target grade
     function getUnmetRequirements(targetGrade, stats) {
         const isNA = (val) => val === null || val === undefined;
@@ -671,40 +721,50 @@ document.addEventListener('DOMContentLoaded', function() {
             improvementSection.style.display = 'none';
         }
 
-        // Display current grade checklist
+        // Display A/B/C/D grade progress grid
         const checklistContainer = document.getElementById('checklistContainer');
-        const allMet = grades.current.requirements.filter(r => !r.skip).every(r => r.met);
+        const allReqs = getAllGradeRequirements(stats.current);
+        const gradeConfig = {
+            A: { color: '#2e7d32', border: '#4caf50', bg: 'rgba(76,175,80,0.07)'  },
+            B: { color: '#1565c0', border: '#2196f3', bg: 'rgba(33,150,243,0.07)' },
+            C: { color: '#e65100', border: '#ff9800', bg: 'rgba(255,152,0,0.07)'  },
+            D: { color: '#424242', border: '#9e9e9e', bg: 'rgba(158,158,158,0.07)'}
+        };
 
-        checklistContainer.innerHTML = `
-            <div class="checklist ${allMet ? 'met' : 'not-met'}">
-                <div class="checklist-header">
-                    <div class="checklist-title">Grade ${grades.current.letter} Requirements</div>
-                    <div class="checklist-status ${allMet ? 'met' : 'not-met'}">
-                        ${allMet ? '✓ All Met' : '○ In Progress'}
+        let gridHtml = '<h3 style="margin-top:0; margin-bottom:14px; border:none; padding:0; font-size:1.1rem; color:#555;">Requirements Progress</h3>';
+        gridHtml += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px;">';
+
+        for (const grade of ['A', 'B', 'C', 'D']) {
+            const reqs = allReqs[grade];
+            const cfg  = gradeConfig[grade];
+            const relevant  = reqs.filter(r => !r.skip);
+            const metCount  = relevant.filter(r => r.met).length;
+            const total     = relevant.length;
+            const allMet    = total > 0 && metCount === total;
+            const cardBg    = allMet ? cfg.bg  : '#fff';
+            const cardBorder= allMet ? cfg.border : '#ddd';
+            const badgeBg   = allMet ? cfg.border : '#eee';
+            const badgeText = allMet ? '#fff' : '#666';
+
+            gridHtml += `
+                <div style="background:${cardBg}; border:2px solid ${cardBorder}; border-radius:10px; padding:14px 16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #e0e0e0;">
+                        <span style="font-size:1.35rem; font-weight:700; color:${cfg.color};">Grade ${grade}</span>
+                        <span style="font-size:0.8rem; font-weight:600; padding:2px 9px; border-radius:10px; background:${badgeBg}; color:${badgeText};">
+                            ${allMet ? '✓ Met' : `${metCount}/${total}`}
+                        </span>
                     </div>
-                </div>
-                <div class="checklist-items">
-                    ${grades.current.requirements.map(req => {
-                        if (req.skip) {
-                            return `
-                                <div class="checklist-item" style="opacity: 0.5;">
-                                    <span class="checklist-icon">○</span>
-                                    <span>${req.label} <em>(Not yet evaluated)</em></span>
-                                </div>
-                            `;
-                        }
-                        return `
-                            <div class="checklist-item ${req.met ? 'met' : 'not-met'}">
-                                <span class="checklist-icon ${req.met ? 'met' : 'not-met'}">
-                                    ${req.met ? '✓' : '✗'}
-                                </span>
-                                <span>${req.label}</span>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-        `;
+                    <ul style="list-style:none; padding:0; margin:0; font-size:0.87rem; line-height:1.8;">
+                        ${reqs.map(r => {
+                            if (r.skip) return `<li style="color:#bbb;">○ ${r.label} <em style="font-size:0.8em;">(pending)</em></li>`;
+                            return `<li style="color:${r.met ? '#2e7d32' : '#c62828'};">${r.met ? '✓' : '✗'} ${r.label}</li>`;
+                        }).join('')}
+                    </ul>
+                </div>`;
+        }
+
+        gridHtml += '</div>';
+        checklistContainer.innerHTML = gridHtml;
 
         // Display summary statistics
         const summaryStats = document.getElementById('summaryStats');
