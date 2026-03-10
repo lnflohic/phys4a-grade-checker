@@ -45,6 +45,30 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateBtn.addEventListener('click', calculateGrade);
     resetBtn.addEventListener('click', resetForm);
 
+    // SLO names for improvement messages
+    const physicsSLONames = [
+        'Apply a problem-solving strategy',
+        'Explain and apply core physical principles to 1-D motion',
+        'Explain and apply core physical principles to 2-D motion',
+        "Apply Newton's laws of motion to a system",
+        "Apply Newton's law of motion to rotating objects (torque)",
+        'Apply the principle of conservation of energy',
+        'Apply the principle of conservation of momentum',
+        'Apply principles of conservation of energy/momentum to rotating objects',
+        'Apply the principles of fluid physics',
+        'Apply the principles of rotational kinematics and dynamics',
+        'Display good scientific practices',
+        'Calculate different energies of a system and work done by a force',
+        'Calculate the forces experienced by objects in a fluid'
+    ];
+
+    const labSLONames = [
+        'Analyze real-world experimental data',
+        'Collaborate with other students in problem-solving and laboratory activities',
+        'Create lab reports in line with scientific standards',
+        'Observe, make a hypothesis, create a test'
+    ];
+
     function getScores(selector, naSelector) {
         const scores = [];
         const inputs = document.querySelectorAll(selector);
@@ -69,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const labSLOs = getScores('.lab-slo', '.lab-na');
         const behaviorSLOs = getScores('.behavior-slo', '.behavior-na');
 
+        const currentWeek = parseInt(document.getElementById('currentWeek').value) || 7;
         const labsMissed = parseInt(document.getElementById('labsMissed').value) || 0;
 
         const projectNA = document.getElementById('projectNA').checked;
@@ -120,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
             current: currentStats,
             best: bestCaseStats,
             worst: worstCaseStats
-        }, physicsSLOs, labSLOs);
+        }, physicsSLOs, labSLOs, currentWeek);
     }
 
     function calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats) {
@@ -410,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function displayResults(grades, stats, physicsSLOs, labSLOs) {
+    function displayResults(grades, stats, physicsSLOs, labSLOs, currentWeek) {
         // Show results section
         resultsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -463,6 +488,50 @@ document.addEventListener('DOMContentLoaded', function() {
             projectionInfo.style.display = 'none';
         }
 
+        // Display improvement opportunities for SLOs below 2.0
+        const improvementSection = document.getElementById('improvementSection');
+        const physicsRemaining = Math.max(0, 15 - currentWeek);
+        const labRemaining = Math.max(0, 14 - currentWeek);
+
+        const physicsOpportunities = [];
+        physicsSLOs.forEach((score, index) => {
+            if (score !== null && score < 2.0 && physicsRemaining > 0) {
+                const chanceWord = physicsRemaining === 1 ? 'chance' : 'chances';
+                physicsOpportunities.push(
+                    `<li><strong>${physicsSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
+                    `You still have <strong>${physicsRemaining} ${chanceWord}</strong> to improve this score.</li>`
+                );
+            }
+        });
+
+        const labOpportunities = [];
+        labSLOs.forEach((score, index) => {
+            if (score !== null && score < 2.0 && labRemaining > 0) {
+                const chanceWord = labRemaining === 1 ? 'chance' : 'chances';
+                labOpportunities.push(
+                    `<li><strong>${labSLONames[index]}</strong> (score: ${score.toFixed(1)}): ` +
+                    `You still have up to <strong>${labRemaining} ${chanceWord}</strong> to improve, ` +
+                    `and 40% of the grade will come from the practicum, so keep on honing your skills!</li>`
+                );
+            }
+        });
+
+        const allOpportunities = [...physicsOpportunities, ...labOpportunities];
+        if (allOpportunities.length > 0) {
+            improvementSection.innerHTML = `
+                <div style="margin: 15px 0; padding: 15px 18px; background: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; border-radius: 6px;">
+                    <strong>💡 Opportunities to Improve:</strong>
+                    <ul style="margin: 10px 0 0 0; padding-left: 20px; line-height: 1.9;">
+                        ${allOpportunities.join('')}
+                    </ul>
+                </div>
+            `;
+            improvementSection.style.display = 'block';
+        } else {
+            improvementSection.innerHTML = '';
+            improvementSection.style.display = 'none';
+        }
+
         // Display current grade checklist
         const checklistContainer = document.getElementById('checklistContainer');
         const allMet = grades.current.requirements.filter(r => !r.skip).every(r => r.met);
@@ -506,22 +575,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="stat-item">
                     <div class="stat-value">${stats.current.physicsSLOsAbove2}/${stats.current.totalEvaluatedPhysics}</div>
                     <div class="stat-label">Physics SLOs ≥2.0</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 12 total)</div>
+                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 13 total)</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${stats.current.physicsSLOsAbove2_5}/${stats.current.totalEvaluatedPhysics}</div>
                     <div class="stat-label">Physics SLOs ≥2.5</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 12 total)</div>
+                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 13 total)</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${stats.current.labSLOsAbove2}/${stats.current.totalEvaluatedLab}</div>
                     <div class="stat-label">Lab SLOs ≥2.0</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 5 total)</div>
+                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 4 total)</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${stats.current.labSLOsAbove2_5}/${stats.current.totalEvaluatedLab}</div>
                     <div class="stat-label">Lab SLOs ≥2.5</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 5 total)</div>
+                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 4 total)</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${stats.current.labsMissed}</div>
@@ -547,12 +616,16 @@ document.addEventListener('DOMContentLoaded', function() {
             checkbox.checked = true;
         });
 
-        // Set defaults for labs missed (not disabled)
+        // Set defaults for labs missed and current week (not disabled)
         document.getElementById('labsMissed').value = '0';
         document.getElementById('labsMissed').disabled = false;
+        const cwInput = document.getElementById('currentWeek');
+        if (cwInput) { cwInput.disabled = false; }
 
         // Hide results
         resultsSection.style.display = 'none';
+        const improvSec = document.getElementById('improvementSection');
+        if (improvSec) { improvSec.style.display = 'none'; improvSec.innerHTML = ''; }
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
