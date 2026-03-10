@@ -753,41 +753,6 @@ document.addEventListener('DOMContentLoaded', function() {
         gridHtml += '</div>';
         checklistContainer.innerHTML = gridHtml;
 
-        // Display summary statistics
-        const summaryStats = document.getElementById('summaryStats');
-        summaryStats.innerHTML = `
-            <h3>Your Performance Summary</h3>
-            <div class="stat-grid">
-                <div class="stat-item">
-                    <div class="stat-value">${stats.current.physicsSLOsAbove2}/${stats.current.totalEvaluatedPhysics}</div>
-                    <div class="stat-label">Physics SLOs ≥2.0</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 13 total)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.current.physicsSLOsAbove2_5}/${stats.current.totalEvaluatedPhysics}</div>
-                    <div class="stat-label">Physics SLOs ≥2.5</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 13 total)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.current.labSLOsAbove2}/${stats.current.totalEvaluatedLab}</div>
-                    <div class="stat-label">Lab SLOs ≥2.0</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 4 total)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.current.labSLOsAbove2_5}/${stats.current.totalEvaluatedLab}</div>
-                    <div class="stat-label">Lab SLOs ≥2.5</div>
-                    <div class="stat-label" style="font-size: 0.8rem; margin-top: 5px;">(out of 4 total)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${stats.current.labsMissed}</div>
-                    <div class="stat-label">Labs Missed</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${isFinite(stats.current.minSLO) ? stats.current.minSLO.toFixed(1) : 'N/A'}</div>
-                    <div class="stat-label">Lowest SLO Score</div>
-                </div>
-            </div>
-        `;
     }
 
     function resetForm() {
