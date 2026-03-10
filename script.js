@@ -527,41 +527,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('gradeLetter').textContent = grades.current.letter;
         document.getElementById('gradeDescription').textContent = grades.current.description;
 
-        // Display projection info
-        const projectionInfo = document.getElementById('projectionInfo');
-        if (completionPercent < 100) {
-            // Check if low lab SLOs are affecting the grade
-            const hasLowLabSLO = stats.current.minLabSLO < 1.5 && stats.current.totalEvaluatedLab < 5;
-            const hasLowPhysicsSLO = stats.current.minPhysicsSLO < 1.5 && stats.current.totalEvaluatedPhysics < 12;
-            const showLabWarning = hasLowLabSLO || hasLowPhysicsSLO;
-
-            const lockedIn = grades.best.letter === grades.worst.letter && grades.best.letter !== 'F';
-            const projClass = lockedIn ? 'projection-best' : '';
-            projectionInfo.className = `projection-info ${projClass}`;
-            projectionInfo.innerHTML = `
-                <h3>📊 Grade Projections (${100 - completionPercent}% of SLOs remaining)</h3>
-                ${lockedIn ?
-                    `<p><strong>Your grade will be: ${grades.best.letter}</strong> (regardless of remaining SLO scores)</p>` :
-                    `<p><strong>Best case scenario:</strong> ${grades.best.letter} (if all remaining SLOs = 3.0)</p>
-                     <p><strong>Worst case scenario:</strong> ${grades.worst.letter} (if all remaining SLOs = 0.0)</p>
-                     <p><strong>Current trajectory:</strong> ${grades.current.letter} (based only on evaluated SLOs)</p>`
-                }
-                ${hasLowLabSLO ? `
-                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid var(--warning-color); border-radius: 4px;">
-                    <strong>⚠️ Lab SLO Note:</strong> You have only ${stats.current.totalEvaluatedLab === 1 ? 'one lab SLO' : `${stats.current.totalEvaluatedLab} lab SLOs`} evaluated so far (lowest: ${stats.current.minLabSLO.toFixed(1)}). Lab SLOs use a <strong>decaying average</strong> — your most recent scores count more than earlier ones. Improved performance on future labs will significantly raise this score.
-                </div>
-                ` : ''}
-                ${hasLowPhysicsSLO ? `
-                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 152, 0, 0.1); border-left: 3px solid var(--warning-color); border-radius: 4px;">
-                    <strong>⚠️ Physics SLO Note:</strong> You have only ${stats.current.totalEvaluatedPhysics === 1 ? 'one physics SLO' : `${stats.current.totalEvaluatedPhysics} physics SLOs`} evaluated so far (lowest: ${stats.current.minPhysicsSLO.toFixed(1)}). Physics SLOs use a <strong>decaying average</strong> — your most recent scores count more than earlier ones. Improved performance on future assessments will significantly raise this score.
-                </div>
-                ` : ''}
-            `;
-            projectionInfo.style.display = 'block';
-        } else {
-            projectionInfo.style.display = 'none';
-        }
-
         // Display improvement section (two-tone: urgent vs encouraging)
         const improvementSection = document.getElementById('improvementSection');
         const physicsRemaining = Math.max(0, 15 - CURRENT_WEEK);
