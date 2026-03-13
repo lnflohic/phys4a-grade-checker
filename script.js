@@ -112,11 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const evaluatedBehavior = behaviorSLOs.filter(s => s !== null);
 
         const currentStats = {
-            physicsSLOsAbove2: evaluatedPhysics.filter(s => s >= 2.0).length,
+            physicsSLOsAbove1_8: evaluatedPhysics.filter(s => s >= 1.8).length,
             physicsSLOsAbove2_5: evaluatedPhysics.filter(s => s >= 2.5).length,
-            labSLOsAbove2: evaluatedLab.filter(s => s >= 2.0).length,
+            labSLOsAbove1_8: evaluatedLab.filter(s => s >= 1.8).length,
             labSLOsAbove2_5: evaluatedLab.filter(s => s >= 2.5).length,
-            behaviorSLOsAbove2: evaluatedBehavior.length > 0 ? evaluatedBehavior.filter(s => s >= 2.0).length : null,
+            behaviorSLOsAbove1_8: evaluatedBehavior.length > 0 ? evaluatedBehavior.filter(s => s >= 1.8).length : null,
             labsMissed: labsMissed,
             projectSLOs: projectSLOs,
             projectSLOs3: projectSLOs3,
@@ -157,11 +157,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const bestBehavior = behaviorSLOs.map(s => s === null ? 3.0 : s);
 
         return {
-            physicsSLOsAbove2: bestPhysics.filter(s => s >= 2.0).length,
+            physicsSLOsAbove1_8: bestPhysics.filter(s => s >= 1.8).length,
             physicsSLOsAbove2_5: bestPhysics.filter(s => s >= 2.5).length,
-            labSLOsAbove2: bestLab.filter(s => s >= 2.0).length,
+            labSLOsAbove1_8: bestLab.filter(s => s >= 1.8).length,
             labSLOsAbove2_5: bestLab.filter(s => s >= 2.5).length,
-            behaviorSLOsAbove2: bestBehavior.filter(s => s >= 2.0).length,
+            behaviorSLOsAbove1_8: bestBehavior.filter(s => s >= 1.8).length,
             labsMissed: currentStats.labsMissed,
             projectSLOs: currentStats.projectSLOs === null ? 3 : currentStats.projectSLOs,
             projectSLOs3: currentStats.projectSLOs3 === null ? 3 : currentStats.projectSLOs3,
@@ -183,11 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const worstBehavior = behaviorSLOs.map(s => s === null ? 0.0 : s);
 
         return {
-            physicsSLOsAbove2: worstPhysics.filter(s => s >= 2.0).length,
+            physicsSLOsAbove1_8: worstPhysics.filter(s => s >= 1.8).length,
             physicsSLOsAbove2_5: worstPhysics.filter(s => s >= 2.5).length,
-            labSLOsAbove2: worstLab.filter(s => s >= 2.0).length,
+            labSLOsAbove1_8: worstLab.filter(s => s >= 1.8).length,
             labSLOsAbove2_5: worstLab.filter(s => s >= 2.5).length,
-            behaviorSLOsAbove2: worstBehavior.filter(s => s >= 2.0).length,
+            behaviorSLOsAbove1_8: worstBehavior.filter(s => s >= 1.8).length,
             labsMissed: currentStats.labsMissed,
             projectSLOs: currentStats.projectSLOs === null ? 0 : currentStats.projectSLOs,
             projectSLOs3: currentStats.projectSLOs3 === null ? 0 : currentStats.projectSLOs3,
@@ -217,8 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for A
         const aRequirements = [
             {
-                met: skipPhysics ? null : stats.physicsSLOsAbove2 >= numPhysics,
-                label: skipPhysics ? 'All physics SLOs ≥2.0' : `All ${numPhysics} physics SLOs ≥2.0`,
+                met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= numPhysics,
+                label: skipPhysics ? 'All physics SLOs ≥1.8' : `All ${numPhysics} physics SLOs ≥1.8`,
                 skip: skipPhysics
             },
             {
@@ -228,15 +228,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: skipPhysics
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (3/5)),
-                label: skipLab ? '3/5 lab SLOs ≥2.0' :
-                    numLab >= 5 ? '3/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (3/5))}/${numLab} lab SLOs ≥2.0`,
+                met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (3/4)),
+                label: skipLab ? '3/4 lab SLOs ≥1.8' :
+                    numLab >= 4 ? '3/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (3/4))}/${numLab} lab SLOs ≥1.8`,
                 skip: skipLab
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (2/5)),
-                label: skipLab ? '2/5 lab SLOs ≥2.5' :
-                    numLab >= 5 ? '2/5 lab SLOs ≥2.5' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.5`,
+                met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/4)),
+                label: skipLab ? '1/4 lab SLOs ≥2.5' :
+                    numLab >= 4 ? '1/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥2.5`,
                 skip: skipLab
             },
             {
@@ -245,8 +245,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: false
             },
             {
-                met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 2,
-                label: 'Behavior SLOs ≥2.0',
+                met: skipBehavior ? null : stats.behaviorSLOsAbove1_8 >= 2,
+                label: 'Behavior SLOs ≥1.8',
                 skip: skipBehavior
             },
             {
@@ -274,9 +274,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for B
         const bRequirements = [
             {
-                met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (9/12)),
-                label: skipPhysics ? '3/4 physics SLOs ≥2.0' :
-                    numPhysics >= 12 ? '9/12 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (9/12))}/${numPhysics} physics SLOs ≥2.0`,
+                met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (9/12)),
+                label: skipPhysics ? '3/4 physics SLOs ≥1.8' :
+                    numPhysics >= 12 ? '9/12 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (9/12))}/${numPhysics} physics SLOs ≥1.8`,
                 skip: skipPhysics
             },
             {
@@ -286,15 +286,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: skipPhysics
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)),
-                label: skipLab ? '2/5 lab SLOs ≥2.0' :
-                    numLab >= 5 ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`,
+                met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (2/4)),
+                label: skipLab ? '2/4 lab SLOs ≥1.8' :
+                    numLab >= 4 ? '2/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (2/4))}/${numLab} lab SLOs ≥1.8`,
                 skip: skipLab
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/5)),
-                label: skipLab ? '1/5 lab SLOs ≥2.5' :
-                    numLab >= 5 ? '1/5 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.5`,
+                met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/4)),
+                label: skipLab ? '1/4 lab SLOs ≥2.5' :
+                    numLab >= 4 ? '1/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥2.5`,
                 skip: skipLab
             },
             {
@@ -303,8 +303,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: false
             },
             {
-                met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 1,
-                label: 'One behavior SLO ≥2.0',
+                met: skipBehavior ? null : stats.behaviorSLOsAbove1_8 >= 1,
+                label: 'One behavior SLO ≥1.8',
                 skip: skipBehavior
             },
             {
@@ -332,15 +332,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for C
         const cRequirements = [
             {
-                met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (6/12)),
-                label: skipPhysics ? '1/2 physics SLOs ≥2.0' :
-                    numPhysics >= 12 ? '6/12 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥2.0`,
+                met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (6/12)),
+                label: skipPhysics ? '1/2 physics SLOs ≥1.8' :
+                    numPhysics >= 12 ? '6/12 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥1.8`,
                 skip: skipPhysics
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)),
-                label: skipLab ? '2/5 lab SLOs ≥2.0' :
-                    numLab >= 5 ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`,
+                met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (2/4)),
+                label: skipLab ? '2/4 lab SLOs ≥1.8' :
+                    numLab >= 4 ? '2/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (2/4))}/${numLab} lab SLOs ≥1.8`,
                 skip: skipLab
             },
             {
@@ -363,9 +363,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check for D
         const dRequirements = [
             {
-                met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (4/12)),
-                label: skipPhysics ? '1/3 physics SLOs ≥2.0' :
-                    numPhysics >= 12 ? '4/12 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥2.0`,
+                met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (4/12)),
+                label: skipPhysics ? '1/3 physics SLOs ≥1.8' :
+                    numPhysics >= 12 ? '4/12 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥1.8`,
                 skip: skipPhysics
             },
             {
@@ -374,9 +374,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: skipPhysics && skipLab
             },
             {
-                met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (1/5)),
-                label: skipLab ? '1/5 lab SLOs ≥2.0' :
-                    numLab >= 5 ? '1/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.0`,
+                met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (1/4)),
+                label: skipLab ? '1/4 lab SLOs ≥1.8' :
+                    numLab >= 4 ? '1/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥1.8`,
                 skip: skipLab
             },
             {
@@ -404,14 +404,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: false
             },
             {
-                met: skipPhysics ? false : stats.physicsSLOsAbove2 <= Math.ceil(numPhysics * (3/12)),
-                label: skipPhysics ? '1/4 or fewer physics SLO ≥2.0' :
-                    numPhysics >= 12 ? '3 or fewer physics SLO ≥2.0' : `${Math.ceil(numPhysics * (3/12))} or fewer physics SLO ≥2.0`,
+                met: skipPhysics ? false : stats.physicsSLOsAbove1_8 <= Math.ceil(numPhysics * (3/12)),
+                label: skipPhysics ? '3 or fewer physics SLOs ≥1.8' :
+                    numPhysics >= 12 ? '3 or fewer physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (3/12))} or fewer physics SLOs ≥1.8`,
                 skip: skipPhysics
             },
             {
-                met: skipLab ? false : stats.labSLOsAbove2 === 0,
-                label: 'All lab SLO <2.0',
+                met: skipLab ? false : stats.labSLOsAbove1_8 === 0,
+                label: 'All lab SLOs <1.8',
                 skip: skipLab
             }
         ];
@@ -444,44 +444,44 @@ document.addEventListener('DOMContentLoaded', function() {
         const numLab    = stats.totalEvaluatedLab;
         const skipPhysics  = numPhysics === 0;
         const skipLab      = numLab === 0;
-        const skipBehavior = isNA(stats.behaviorSLOsAbove2);
+        const skipBehavior = isNA(stats.behaviorSLOsAbove1_8);
 
-        const p2label  = skipPhysics ? 'All physics SLOs ≥2.0' : `All ${numPhysics} physics SLOs ≥2.0`;
-        const p25label = skipPhysics ? '2/3 physics SLOs ≥2.5'
+        const p1_8label = skipPhysics ? 'All physics SLOs ≥1.8' : `All ${numPhysics} physics SLOs ≥1.8`;
+        const p25label  = skipPhysics ? '2/3 physics SLOs ≥2.5'
             : `${Math.ceil(numPhysics * (8/12))}/${numPhysics} physics SLOs ≥2.5`;
 
         return {
             A: [
-                { label: p2label,  met: skipPhysics ? null : stats.physicsSLOsAbove2 >= numPhysics, skip: skipPhysics },
-                { label: p25label, met: skipPhysics ? null : stats.physicsSLOsAbove2_5 >= Math.ceil(numPhysics * (8/12)), skip: skipPhysics },
-                { label: skipLab ? '3/4 lab SLOs ≥2.0' : `${Math.ceil(numLab * (3/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (3/5)), skip: skipLab },
-                { label: skipLab ? '2/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (2/5)), skip: skipLab },
+                { label: p1_8label, met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= numPhysics, skip: skipPhysics },
+                { label: p25label,  met: skipPhysics ? null : stats.physicsSLOsAbove2_5 >= Math.ceil(numPhysics * (8/12)), skip: skipPhysics },
+                { label: skipLab ? '3/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (3/4))}/${numLab} lab SLOs ≥1.8`, met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (3/4)), skip: skipLab },
+                { label: skipLab ? '1/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/4)), skip: skipLab },
                 { label: 'Missed ≤1 lab', met: stats.labsMissed <= 1, skip: false },
-                { label: 'Behavior SLOs ≥2.0', met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 2, skip: skipBehavior },
+                { label: 'Behavior SLOs ≥1.8', met: skipBehavior ? null : stats.behaviorSLOsAbove1_8 >= 2, skip: skipBehavior },
                 { label: 'All project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 3, skip: isNA(stats.projectSLOs) },
                 { label: '1/3 project SLOs =3.0', met: !isNA(stats.projectSLOs3) && stats.projectSLOs3 >= 1, skip: isNA(stats.projectSLOs3) },
                 { label: '≥2.0 on concept matching', met: !isNA(stats.conceptMatching) && stats.conceptMatching >= 2.0, skip: isNA(stats.conceptMatching) },
             ],
             B: [
-                { label: skipPhysics ? '3/4 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (9/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (9/12)), skip: skipPhysics },
+                { label: skipPhysics ? '3/4 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (9/12))}/${numPhysics} physics SLOs ≥1.8`, met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (9/12)), skip: skipPhysics },
                 { label: skipPhysics ? '1/3 physics SLOs ≥2.5' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥2.5`, met: skipPhysics ? null : stats.physicsSLOsAbove2_5 >= Math.ceil(numPhysics * (4/12)), skip: skipPhysics },
-                { label: skipLab ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)), skip: skipLab },
-                { label: skipLab ? '1/5 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/5)), skip: skipLab },
+                { label: skipLab ? '2/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (2/4))}/${numLab} lab SLOs ≥1.8`, met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (2/4)), skip: skipLab },
+                { label: skipLab ? '1/4 lab SLOs ≥2.5' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥2.5`, met: skipLab ? null : stats.labSLOsAbove2_5 >= Math.ceil(numLab * (1/4)), skip: skipLab },
                 { label: 'No SLO <1.7', met: (skipPhysics && skipLab) ? null : stats.minSLO >= 1.7, skip: skipPhysics && skipLab },
                 { label: 'Missed ≤2 labs', met: stats.labsMissed <= 2, skip: false },
-                { label: '1 behavior SLO ≥2.0', met: skipBehavior ? null : stats.behaviorSLOsAbove2 >= 1, skip: skipBehavior },
+                { label: '1 behavior SLO ≥1.8', met: skipBehavior ? null : stats.behaviorSLOsAbove1_8 >= 1, skip: skipBehavior },
                 { label: '2/3 project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 2, skip: isNA(stats.projectSLOs) },
             ],
             C: [
-                { label: skipPhysics ? '1/2 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (6/12)), skip: skipPhysics },
-                { label: skipLab ? '2/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (2/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (2/5)), skip: skipLab },
+                { label: skipPhysics ? '1/2 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥1.8`, met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (6/12)), skip: skipPhysics },
+                { label: skipLab ? '2/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (2/4))}/${numLab} lab SLOs ≥1.8`, met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (2/4)), skip: skipLab },
                 { label: 'No physics/lab SLO <1.5', met: (skipPhysics && skipLab) ? null : stats.minPhysicsSLO >= 1.5 && stats.minLabSLO >= 1.5, skip: skipPhysics && skipLab },
                 { label: 'Missed ≤3 labs', met: stats.labsMissed <= 3, skip: false },
             ],
             D: [
-                { label: skipPhysics ? '1/3 physics SLOs ≥2.0' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥2.0`, met: skipPhysics ? null : stats.physicsSLOsAbove2 >= Math.ceil(numPhysics * (4/12)), skip: skipPhysics },
+                { label: skipPhysics ? '1/3 physics SLOs ≥1.8' : `${Math.ceil(numPhysics * (4/12))}/${numPhysics} physics SLOs ≥1.8`, met: skipPhysics ? null : stats.physicsSLOsAbove1_8 >= Math.ceil(numPhysics * (4/12)), skip: skipPhysics },
                 { label: 'No physics/lab SLO <1.3', met: (skipPhysics && skipLab) ? null : stats.minPhysicsSLO >= 1.3 && stats.minLabSLO >= 1.3, skip: skipPhysics && skipLab },
-                { label: skipLab ? '1/5 lab SLOs ≥2.0' : `${Math.ceil(numLab * (1/5))}/${numLab} lab SLOs ≥2.0`, met: skipLab ? null : stats.labSLOsAbove2 >= Math.ceil(numLab * (1/5)), skip: skipLab },
+                { label: skipLab ? '1/4 lab SLOs ≥1.8' : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥1.8`, met: skipLab ? null : stats.labSLOsAbove1_8 >= Math.ceil(numLab * (1/4)), skip: skipLab },
                 { label: 'Missed ≤4 labs', met: stats.labsMissed <= 4, skip: false },
             ]
         };
@@ -496,26 +496,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (targetGrade === 'A') {
             if (numPhysics > 0) {
-                const sf2 = numPhysics - stats.physicsSLOsAbove2;
-                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const sfLow = numPhysics - stats.physicsSLOsAbove1_8;
+                if (sfLow > 0) unmet.push(`${sfLow} more physics SLO${sfLow > 1 ? 's' : ''} must reach ≥1.8`);
                 const need2_5 = Math.ceil(numPhysics * (8 / 12));
                 const sf2_5 = need2_5 - stats.physicsSLOsAbove2_5;
                 if (sf2_5 > 0) unmet.push(`${sf2_5} more physics SLO${sf2_5 > 1 ? 's' : ''} must reach ≥2.5`);
             }
             if (numLab > 0) {
-                const needL2 = Math.ceil(numLab * (3 / 5));
-                const sfL2 = needL2 - stats.labSLOsAbove2;
-                if (sfL2 > 0) unmet.push(`${sfL2} more lab SLO${sfL2 > 1 ? 's' : ''} must reach ≥2.0`);
-                const needL2_5 = Math.ceil(numLab * (2 / 5));
+                const needL1_8 = Math.ceil(numLab * (3 / 4));
+                const sfL1_8 = needL1_8 - stats.labSLOsAbove1_8;
+                if (sfL1_8 > 0) unmet.push(`${sfL1_8} more lab SLO${sfL1_8 > 1 ? 's' : ''} must reach ≥1.8`);
+                const needL2_5 = Math.ceil(numLab * (1 / 4));
                 const sfL2_5 = needL2_5 - stats.labSLOsAbove2_5;
                 if (sfL2_5 > 0) unmet.push(`${sfL2_5} more lab SLO${sfL2_5 > 1 ? 's' : ''} must reach ≥2.5`);
             }
             if (stats.labsMissed > 1) unmet.push(`labs missed (${stats.labsMissed}) must be ≤1`);
         } else if (targetGrade === 'B') {
             if (numPhysics > 0) {
-                const need2 = Math.ceil(numPhysics * (9 / 12));
-                const sf2 = need2 - stats.physicsSLOsAbove2;
-                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const need1_8 = Math.ceil(numPhysics * (9 / 12));
+                const sfLow = need1_8 - stats.physicsSLOsAbove1_8;
+                if (sfLow > 0) unmet.push(`${sfLow} more physics SLO${sfLow > 1 ? 's' : ''} must reach ≥1.8`);
                 const need2_5 = Math.ceil(numPhysics * (4 / 12));
                 const sf2_5 = need2_5 - stats.physicsSLOsAbove2_5;
                 if (sf2_5 > 0) unmet.push(`${sf2_5} more physics SLO${sf2_5 > 1 ? 's' : ''} must reach ≥2.5`);
@@ -526,14 +526,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stats.labsMissed > 2) unmet.push(`labs missed (${stats.labsMissed}) must be ≤2`);
         } else if (targetGrade === 'C') {
             if (numPhysics > 0) {
-                const need2 = Math.ceil(numPhysics * (6 / 12));
-                const sf2 = need2 - stats.physicsSLOsAbove2;
-                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const need1_8 = Math.ceil(numPhysics * (6 / 12));
+                const sfLow = need1_8 - stats.physicsSLOsAbove1_8;
+                if (sfLow > 0) unmet.push(`${sfLow} more physics SLO${sfLow > 1 ? 's' : ''} must reach ≥1.8`);
             }
             if (numLab > 0) {
-                const needL2 = Math.ceil(numLab * (2 / 5));
-                const sfL2 = needL2 - stats.labSLOsAbove2;
-                if (sfL2 > 0) unmet.push(`${sfL2} more lab SLO${sfL2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const needL1_8 = Math.ceil(numLab * (2 / 4));
+                const sfL1_8 = needL1_8 - stats.labSLOsAbove1_8;
+                if (sfL1_8 > 0) unmet.push(`${sfL1_8} more lab SLO${sfL1_8 > 1 ? 's' : ''} must reach ≥1.8`);
             }
             if (isFinite(stats.minPhysicsSLO) && stats.minPhysicsSLO < 1.5) {
                 unmet.push(`raise lowest physics SLO above 1.5 (currently ${stats.minPhysicsSLO.toFixed(1)})`);
@@ -544,9 +544,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (stats.labsMissed > 3) unmet.push(`labs missed (${stats.labsMissed}) must be ≤3`);
         } else if (targetGrade === 'D') {
             if (numPhysics > 0) {
-                const need2 = Math.ceil(numPhysics * (4 / 12));
-                const sf2 = need2 - stats.physicsSLOsAbove2;
-                if (sf2 > 0) unmet.push(`${sf2} more physics SLO${sf2 > 1 ? 's' : ''} must reach ≥2.0`);
+                const need1_8 = Math.ceil(numPhysics * (4 / 12));
+                const sfLow = need1_8 - stats.physicsSLOsAbove1_8;
+                if (sfLow > 0) unmet.push(`${sfLow} more physics SLO${sfLow > 1 ? 's' : ''} must reach ≥1.8`);
             }
             if (isFinite(stats.minPhysicsSLO) && stats.minPhysicsSLO < 1.3) {
                 unmet.push(`raise lowest physics SLO above 1.3 (currently ${stats.minPhysicsSLO.toFixed(1)})`);
@@ -628,14 +628,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let aSummary = '';
         if (grades.best.letter === 'A' && grades.current.letter !== 'A') {
             const parts = [];
-            const physBelow2   = physicsSLOs.filter(s => s !== null && s < 2.0).length;
-            const physBelow2_5 = physicsSLOs.filter(s => s !== null && s >= 2.0 && s < 2.5).length;
-            const labBelow2    = labSLOs.filter(s => s !== null && s < 2.0).length;
-            const labBelow2_5  = labSLOs.filter(s => s !== null && s >= 2.0 && s < 2.5).length;
-            if (physBelow2   > 0) parts.push(`${physBelow2} physics SLO${physBelow2 > 1 ? 's' : ''} below 2.0 need to reach ≥2.0`);
-            if (physBelow2_5 > 0) parts.push(`${physBelow2_5} physics SLO${physBelow2_5 > 1 ? 's' : ''} between 2.0–2.5 could be pushed to ≥2.5`);
-            if (labBelow2    > 0) parts.push(`${labBelow2} lab SLO${labBelow2 > 1 ? 's' : ''} below 2.0 need attention`);
-            if (labBelow2_5  > 0) parts.push(`${labBelow2_5} lab SLO${labBelow2_5 > 1 ? 's' : ''} between 2.0–2.5 could reach ≥2.5`);
+            const physBelow1_8  = physicsSLOs.filter(s => s !== null && s < 1.8).length;
+            const physBelow2_5  = physicsSLOs.filter(s => s !== null && s >= 1.8 && s < 2.5).length;
+            const labBelow1_8   = labSLOs.filter(s => s !== null && s < 1.8).length;
+            const labBelow2_5   = labSLOs.filter(s => s !== null && s >= 1.8 && s < 2.5).length;
+            if (physBelow1_8  > 0) parts.push(`${physBelow1_8} physics SLO${physBelow1_8 > 1 ? 's' : ''} below 1.8 need to reach ≥1.8`);
+            if (physBelow2_5  > 0) parts.push(`${physBelow2_5} physics SLO${physBelow2_5 > 1 ? 's' : ''} between 1.8–2.5 could be pushed to ≥2.5`);
+            if (labBelow1_8   > 0) parts.push(`${labBelow1_8} lab SLO${labBelow1_8 > 1 ? 's' : ''} below 1.8 need attention`);
+            if (labBelow2_5   > 0) parts.push(`${labBelow2_5} lab SLO${labBelow2_5 > 1 ? 's' : ''} between 1.8–2.5 could reach ≥2.5`);
             if (parts.length > 0) {
                 aSummary = `<p>🎯 <strong>Path to an A:</strong> Among your graded SLOs — ${parts.join('; ')}.</p>`;
             }
