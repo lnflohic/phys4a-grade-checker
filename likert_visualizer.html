@@ -323,16 +323,9 @@
     </div>
 
     <script>
-        // Likert scale mapping
-        const likertMapping = {
-            'Never': 0,
-            'A few times a year': 1,
-            'A few times a month': 2,
-            'Almost every day': 3,
-            'Every day': 4
-        };
-
-        const likertLabels = Object.keys(likertMapping);
+        // Numeric scale 1-10
+        const SCALE_MIN = 1;
+        const SCALE_MAX = 10;
 
         let surveyData = null;
         let questions = [];
@@ -356,13 +349,13 @@
                             name: "Design Gap",
                             color: "rgba(239, 68, 68, 0.15)", // red
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Unexamined Privilege",
                             color: "rgba(59, 130, 246, 0.15)", // blue
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -374,13 +367,13 @@
                             name: "Unexamined Modeling",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Design Gap",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -394,13 +387,13 @@
                             name: "Unregulated Use",
                             color: "rgba(245, 158, 11, 0.15)", // amber
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Untapped Potential",
                             color: "rgba(139, 92, 246, 0.15)", // purple
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -412,13 +405,13 @@
                             name: "Untapped Potential",
                             color: "rgba(139, 92, 246, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Unregulated Use",
                             color: "rgba(245, 158, 11, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -432,13 +425,13 @@
                             name: "Premature Dependence",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Preparation Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -450,13 +443,13 @@
                             name: "Preparation Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Premature Dependence",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -470,13 +463,13 @@
                             name: "Premature Reliance",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Workforce Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -488,13 +481,13 @@
                             name: "Workforce Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Premature Reliance",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -508,13 +501,13 @@
                             name: "Early Adopter",
                             color: "rgba(16, 185, 129, 0.15)", // green
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Adoption Gap",
                             color: "rgba(244, 114, 182, 0.15)", // pink
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -526,13 +519,13 @@
                             name: "Adoption Gap",
                             color: "rgba(244, 114, 182, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Early Adopter",
                             color: "rgba(16, 185, 129, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -546,13 +539,13 @@
                             name: "Over-Acceleration",
                             color: "rgba(239, 68, 68, 0.15)", // red
                             condition: (x, y) => x > y + 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Preparation Gap",
                             color: "rgba(59, 130, 246, 0.15)", // blue
                             condition: (x, y) => x < y - 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -564,13 +557,13 @@
                             name: "Preparation Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Over-Acceleration",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -584,13 +577,13 @@
                             name: "Imbalanced Preparation",
                             color: "rgba(239, 68, 68, 0.15)", // red
                             condition: (x, y) => x > y + 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Workforce Readiness Gap",
                             color: "rgba(59, 130, 246, 0.15)", // blue
                             condition: (x, y) => x < y - 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -602,13 +595,13 @@
                             name: "Workforce Readiness Gap",
                             color: "rgba(59, 130, 246, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         },
                         {
                             name: "Imbalanced Preparation",
                             color: "rgba(239, 68, 68, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         }
                     ]
                 },
@@ -622,13 +615,13 @@
                             name: "Industry Pressure",
                             color: "rgba(234, 179, 8, 0.15)", // yellow
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Personal Innovation",
                             color: "rgba(99, 102, 241, 0.15)", // indigo
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 },
@@ -640,13 +633,13 @@
                             name: "Personal Innovation",
                             color: "rgba(99, 102, 241, 0.15)",
                             condition: (x, y) => y > x + 0.3,
-                            textPosition: { x: 0.5, y: 3.5 }
+                            textPosition: { x: 2, y: 8 }
                         },
                         {
                             name: "Industry Pressure",
                             color: "rgba(234, 179, 8, 0.15)",
                             condition: (x, y) => y < x - 0.3,
-                            textPosition: { x: 3.5, y: 0.5 }
+                            textPosition: { x: 8, y: 2 }
                         }
                     ]
                 }
@@ -884,12 +877,15 @@
                 throw new Error('No valid data found in CSV');
             }
 
-            // Validate Likert scale values
+            // Validate numeric scale values (1-10)
             for (let row of surveyData) {
                 for (let q of questions) {
                     const value = row[q];
-                    if (value && value.trim() !== '' && !(value in likertMapping)) {
-                        throw new Error(`Invalid Likert value "${value}" in column ${q}. Expected: ${likertLabels.join(', ')}`);
+                    if (value && value.trim() !== '') {
+                        const num = parseFloat(value);
+                        if (isNaN(num) || num < SCALE_MIN || num > SCALE_MAX) {
+                            throw new Error(`Invalid value "${value}" in column ${q}. Expected a number from ${SCALE_MIN} to ${SCALE_MAX}.`);
+                        }
                     }
                 }
             }
@@ -1017,19 +1013,19 @@
                 const yValue = row[yQuestion];
 
                 if (xValue && yValue && xValue.trim() !== '' && yValue.trim() !== '') {
-                    const xNumeric = likertMapping[xValue];
-                    const yNumeric = likertMapping[yValue];
+                    const xNumeric = parseFloat(xValue);
+                    const yNumeric = parseFloat(yValue);
 
-                    if (xNumeric !== undefined && yNumeric !== undefined) {
+                    if (!isNaN(xNumeric) && !isNaN(yNumeric)) {
                         // Add jitter
-                        const jitter = 0.15;
+                        const jitter = 0.3;
                         xData.push(xNumeric + (Math.random() - 0.5) * jitter);
                         yData.push(yNumeric + (Math.random() - 0.5) * jitter);
 
                         // Create concise hover text
                         const xShort = xQuestion.length > 50 ? xQuestion.substring(0, 50) + '...' : xQuestion;
                         const yShort = yQuestion.length > 50 ? yQuestion.substring(0, 50) + '...' : yQuestion;
-                        hoverText.push(`<b>Response ${idx + 1}</b><br><br>${xShort}<br><b>${xValue}</b><br><br>${yShort}<br><b>${yValue}</b>`);
+                        hoverText.push(`<b>Response ${idx + 1}</b><br><br>${xShort}<br><b>${xNumeric}</b><br><br>${yShort}<br><b>${yNumeric}</b>`);
                     }
                 }
             });
@@ -1056,8 +1052,8 @@
 
             // Add 1:1 diagonal line (y = x)
             const diagonalLine = {
-                x: [-0.5, 4.5],
-                y: [-0.5, 4.5],
+                x: [0.5, 10.5],
+                y: [0.5, 10.5],
                 mode: 'lines',
                 type: 'scatter',
                 line: {
@@ -1083,7 +1079,7 @@
                         // Upper triangle (above diagonal with gap)
                         shapes.push({
                             type: 'path',
-                            path: 'M -0.5,-0.2 L 4.5,4.8 L -0.5,4.5 Z',
+                            path: 'M 0.5,1.3 L 10.5,11.5 L 0.5,10.5 Z',
                             fillcolor: zone.color,
                             line: { width: 0 },
                             layer: 'below'
@@ -1092,7 +1088,7 @@
                         // Lower triangle (below diagonal with gap)
                         shapes.push({
                             type: 'path',
-                            path: 'M -0.5,-0.5 L 4.5,-0.5 L 4.8,4.5 Z',
+                            path: 'M 0.5,0.5 L 10.5,0.5 L 11.5,10.5 Z',
                             fillcolor: zone.color,
                             line: { width: 0 },
                             layer: 'below'
@@ -1132,11 +1128,11 @@
                         font: { size: 16 }
                     },
                     tickmode: 'array',
-                    tickvals: [0, 1, 2, 3, 4],
-                    ticktext: likertLabels,
-                    range: [-0.5, 4.5],
+                    tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    ticktext: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                    range: [0.5, 10.5],
                     gridcolor: '#e0e0e0',
-                    tickangle: -45,
+                    tickangle: 0,
                     tickfont: { size: 14 },
                     scaleanchor: 'y',
                     scaleratio: 1,
@@ -1148,9 +1144,9 @@
                         font: { size: 16 }
                     },
                     tickmode: 'array',
-                    tickvals: [0, 1, 2, 3, 4],
-                    ticktext: likertLabels,
-                    range: [-0.5, 4.5],
+                    tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    ticktext: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                    range: [0.5, 10.5],
                     gridcolor: '#e0e0e0',
                     tickfont: { size: 14 },
                     constrain: 'domain'
@@ -1161,7 +1157,7 @@
                     family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
                 },
                 hovermode: 'closest',
-                margin: { t: 60, r: 40, b: 150, l: 250 },
+                margin: { t: 60, r: 40, b: 80, l: 250 },
                 showlegend: false
             };
 
