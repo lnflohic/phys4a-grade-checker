@@ -877,17 +877,25 @@
                 throw new Error('No valid data found in CSV');
             }
 
-            // Validate numeric scale values (1-10)
-            for (let row of surveyData) {
-                for (let q of questions) {
+            // Filter to rows with at least some valid numeric values; skip non-numeric silently
+            let skippedCount = 0;
+            surveyData = surveyData.filter(row => {
+                const hasValidNumeric = questions.some(q => {
                     const value = row[q];
-                    if (value && value.trim() !== '') {
-                        const num = parseFloat(value);
-                        if (isNaN(num) || num < SCALE_MIN || num > SCALE_MAX) {
-                            throw new Error(`Invalid value "${value}" in column ${q}. Expected a number from ${SCALE_MIN} to ${SCALE_MAX}.`);
-                        }
-                    }
-                }
+                    if (!value || value.trim() === '') return false;
+                    const num = parseFloat(value);
+                    return !isNaN(num) && num >= SCALE_MIN && num <= SCALE_MAX;
+                });
+                if (!hasValidNumeric) skippedCount++;
+                return hasValidNumeric;
+            });
+
+            if (surveyData.length === 0) {
+                throw new Error(`No valid numeric responses found (1–${SCALE_MAX}). Make sure your form uses numbers.`);
+            }
+
+            if (skippedCount > 0) {
+                console.warn(`Skipped ${skippedCount} row(s) with non-numeric responses (old text-label format).`);
             }
 
             initializeControls();
