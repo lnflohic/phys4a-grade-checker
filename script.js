@@ -22,20 +22,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle special N/A checkboxes
-    ['projectNA', 'project3NA', 'conceptNA'].forEach(id => {
+    // Handle special N/A checkboxes (project, concept, practicum)
+    ['projectNA', 'project3NA', 'conceptNA',
+     'practicumAnalyzeNA', 'practicumObserveNA', 'practicumCreateNA', 'practicumSciPracNA'
+    ].forEach(id => {
         const checkbox = document.getElementById(id);
         if (checkbox) {
             checkbox.addEventListener('change', function() {
                 const inputId = id.replace('NA', '');
-                const input = document.getElementById(inputId === 'project' ? 'projectSLOs' :
-                                                     inputId === 'project3' ? 'projectSLOs3' :
-                                                     'conceptMatching');
+                const input = document.getElementById(
+                    inputId === 'project'  ? 'projectSLOs'    :
+                    inputId === 'project3' ? 'projectSLOs3'   :
+                    inputId === 'concept'  ? 'conceptMatching' :
+                    inputId   // practicumAnalyze, practicumObserve, practicumCreate, practicumSciPrac
+                );
                 if (input) {
                     input.disabled = this.checked;
-                    if (this.checked) {
-                        input.value = '';
-                    }
+                    if (this.checked) input.value = '';
                 }
             });
         }
@@ -91,22 +94,63 @@ document.addEventListener('DOMContentLoaded', function() {
     function calculateGrade() {
         // Collect all scores
         const physicsSLOs = getScores('.physics-slo', '.physics-na');
-        const labSLOs = getScores('.lab-slo', '.lab-na');
+        const labSLOs     = getScores('.lab-slo',     '.lab-na');
         const behaviorSLOs = getScores('.behavior-slo', '.behavior-na');
 
         const labsMissed = parseInt(document.getElementById('labsMissed').value) || 0;
 
-        const projectNA = document.getElementById('projectNA').checked;
-        const project3NA = document.getElementById('project3NA').checked;
-        const conceptNA = document.getElementById('conceptNA').checked;
+        const projectNA   = document.getElementById('projectNA').checked;
+        const project3NA  = document.getElementById('project3NA').checked;
+        const conceptNA   = document.getElementById('conceptNA').checked;
 
-        const projectSLOs = projectNA ? null : (parseInt(document.getElementById('projectSLOs').value) || 0);
-        const projectSLOs3 = project3NA ? null : (parseInt(document.getElementById('projectSLOs3').value) || 0);
+        const projectSLOs    = projectNA  ? null : (parseInt(document.getElementById('projectSLOs').value)    || 0);
+        const projectSLOs3   = project3NA ? null : (parseInt(document.getElementById('projectSLOs3').value)   || 0);
         const conceptMatching = conceptNA ? null : (parseFloat(document.getElementById('conceptMatching').value) || 0);
 
-        // Calculate current statistics (only evaluated SLOs)
-        const evaluatedPhysics = physicsSLOs.filter(s => s !== null);
-        const evaluatedLab = labSLOs.filter(s => s !== null);
+        // Read practicum scores (4 SLOs graded on the practicum assignment)
+        const pracRead = (id) => {
+            const na = document.getElementById(id + 'NA');
+            if (na && na.checked) return null;
+            const v = parseFloat(document.getElementById(id).value);
+            return isNaN(v) ? 0 : v;
+        };
+        const practicum = {
+            analyze: pracRead('practicumAnalyze'),   // → lab SLO index 0
+            observe: pracRead('practicumObserve'),   // → lab SLO index 3
+            create:  pracRead('practicumCreate'),    // → lab SLO index 2
+            sciPrac: pracRead('practicumSciPrac'),   // → physics SLO index 10
+        };
+
+        // Compute effective (blended) scores: 60% semester + 40% practicum
+        // Only blends when BOTH the semester score and practicum score are entered
+        const blend = (sem, prac) => prac !== null && sem !== null
+            ? +((0.6 * sem + 0.4 * prac).toFixed(3)) : sem;
+
+        const effectivePhysicsSLOs = physicsSLOs.map((s, i) =>
+            i === 10 ? blend(s, practicum.sciPrac) : s);
+        const effectiveLabSLOs = labSLOs.map((s, i) =>
+            i === 0 ? blend(s, practicum.analyze) :
+            i === 2 ? blend(s, practicum.create)  :
+            i === 3 ? blend(s, practicum.observe) : s);
+
+        // Build blend summary (for display in results)
+        const blendSummary = [];
+        const addBlend = (name, sem, prac, eff) => {
+            if (sem !== null && prac !== null)
+                blendSummary.push({ name, semester: sem, practicum: prac, combined: eff });
+        };
+        addBlend('Display good scientific practices',
+            physicsSLOs[10], practicum.sciPrac, effectivePhysicsSLOs[10]);
+        addBlend('Analyze real-world experimental data',
+            labSLOs[0], practicum.analyze, effectiveLabSLOs[0]);
+        addBlend('Create lab reports in line with scientific standards',
+            labSLOs[2], practicum.create, effectiveLabSLOs[2]);
+        addBlend('Observe, make a hypothesis, create a test',
+            labSLOs[3], practicum.observe, effectiveLabSLOs[3]);
+
+        // Calculate current statistics using effective (blended) scores
+        const evaluatedPhysics  = effectivePhysicsSLOs.filter(s => s !== null);
+        const evaluatedLab      = effectiveLabSLOs.filter(s => s !== null);
         const evaluatedBehavior = behaviorSLOs.filter(s => s !== null);
 
         const currentStats = {
@@ -131,14 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
             totalLab: 4
         };
 
-        // Calculate best case and worst case scenarios
-        const bestCaseStats = calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats);
-        const worstCaseStats = calculateWorstCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats);
+        // Calculate best case and worst case scenarios (pass raw SLOs + practicum for blending)
+        const bestCaseStats  = calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats, practicum);
+        const worstCaseStats = calculateWorstCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats, practicum);
 
         // Determine grades
         const currentGrade = determineGrade(currentStats, 'current');
-        const bestGrade = determineGrade(bestCaseStats, 'best');
-        const worstGrade = determineGrade(worstCaseStats, 'worst');
+        const bestGrade    = determineGrade(bestCaseStats, 'best');
+        const worstGrade   = determineGrade(worstCaseStats, 'worst');
 
         displayResults({
             current: currentGrade,
@@ -148,14 +192,26 @@ document.addEventListener('DOMContentLoaded', function() {
             current: currentStats,
             best: bestCaseStats,
             worst: worstCaseStats
-        }, physicsSLOs, labSLOs);
+        }, effectivePhysicsSLOs, effectiveLabSLOs, blendSummary);
     }
 
-    function calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats) {
-        // Assume all unevaluated SLOs get 3.0
-        const bestPhysics = physicsSLOs.map(s => s === null ? 3.0 : s);
-        const bestLab = labSLOs.map(s => s === null ? 3.0 : s);
+    function calculateBestCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats, practicum) {
+        // Assume all unevaluated SLOs get 3.0; ungraded practicum also gets 3.0
+        const bestPhysics  = physicsSLOs.map(s => s === null ? 3.0 : s);
+        const bestLab      = labSLOs.map(s => s === null ? 3.0 : s);
         const bestBehavior = behaviorSLOs.map(s => s === null ? 3.0 : s);
+        const bestPrac = {
+            analyze: practicum.analyze !== null ? practicum.analyze : 3.0,
+            observe: practicum.observe !== null ? practicum.observe : 3.0,
+            create:  practicum.create  !== null ? practicum.create  : 3.0,
+            sciPrac: practicum.sciPrac !== null ? practicum.sciPrac : 3.0,
+        };
+
+        // Apply 60/40 blending for the 4 practicum SLOs
+        bestPhysics[10] = +((0.6 * bestPhysics[10] + 0.4 * bestPrac.sciPrac).toFixed(3));
+        bestLab[0] = +((0.6 * bestLab[0] + 0.4 * bestPrac.analyze).toFixed(3));
+        bestLab[2] = +((0.6 * bestLab[2] + 0.4 * bestPrac.create).toFixed(3));
+        bestLab[3] = +((0.6 * bestLab[3] + 0.4 * bestPrac.observe).toFixed(3));
 
         return {
             physicsSLOsAbove1_75: bestPhysics.filter(s => s >= 1.75).length,
@@ -180,11 +236,23 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function calculateWorstCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats) {
-        // Assume all unevaluated SLOs get 0.0
-        const worstPhysics = physicsSLOs.map(s => s === null ? 0.0 : s);
-        const worstLab = labSLOs.map(s => s === null ? 0.0 : s);
+    function calculateWorstCase(physicsSLOs, labSLOs, behaviorSLOs, currentStats, practicum) {
+        // Assume all unevaluated SLOs get 0.0; ungraded practicum also gets 0.0
+        const worstPhysics  = physicsSLOs.map(s => s === null ? 0.0 : s);
+        const worstLab      = labSLOs.map(s => s === null ? 0.0 : s);
         const worstBehavior = behaviorSLOs.map(s => s === null ? 0.0 : s);
+        const worstPrac = {
+            analyze: practicum.analyze !== null ? practicum.analyze : 0.0,
+            observe: practicum.observe !== null ? practicum.observe : 0.0,
+            create:  practicum.create  !== null ? practicum.create  : 0.0,
+            sciPrac: practicum.sciPrac !== null ? practicum.sciPrac : 0.0,
+        };
+
+        // Apply 60/40 blending for the 4 practicum SLOs
+        worstPhysics[10] = +((0.6 * worstPhysics[10] + 0.4 * worstPrac.sciPrac).toFixed(3));
+        worstLab[0] = +((0.6 * worstLab[0] + 0.4 * worstPrac.analyze).toFixed(3));
+        worstLab[2] = +((0.6 * worstLab[2] + 0.4 * worstPrac.create).toFixed(3));
+        worstLab[3] = +((0.6 * worstLab[3] + 0.4 * worstPrac.observe).toFixed(3));
 
         return {
             physicsSLOsAbove1_75: worstPhysics.filter(s => s >= 1.75).length,
@@ -566,10 +634,35 @@ document.addEventListener('DOMContentLoaded', function() {
         return unmet;
     }
 
-    function displayResults(grades, stats, physicsSLOs, labSLOs) {
+    function displayResults(grades, stats, physicsSLOs, labSLOs, blendSummary) {
         // Show results section
         resultsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        // Render practicum blend summary (only when at least one practicum score is entered)
+        const practicumSection = document.getElementById('practicumSection');
+        if (blendSummary.length > 0) {
+            const rows = blendSummary.map(b => `
+                <div class="blend-row">
+                    <span class="blend-name">${b.name}</span>
+                    <span class="blend-calc">
+                        0.6 × ${b.semester.toFixed(1)} + 0.4 × ${b.practicum.toFixed(1)}
+                        = <strong>${b.combined.toFixed(2)}</strong>
+                    </span>
+                </div>`).join('');
+            practicumSection.innerHTML = `
+                <div class="practicum-blend">
+                    <h3 style="margin-top:0;">Practicum — Combined Scores</h3>
+                    <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:12px;">
+                        60% semester-long + 40% practicum. These combined scores are used in all grade calculations below.
+                    </p>
+                    ${rows}
+                </div>`;
+            practicumSection.style.display = 'block';
+        } else {
+            practicumSection.innerHTML = '';
+            practicumSection.style.display = 'none';
+        }
 
         // Display improvement section (two-tone: urgent vs encouraging)
         const improvementSection = document.getElementById('improvementSection');

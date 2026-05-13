@@ -240,6 +240,43 @@ h3 {
 }
 
 
+.practicum-blend {
+    background: #f0f7ff;
+    border: 2px solid var(--secondary-color);
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+}
+
+.blend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.blend-row:last-child {
+    border-bottom: none;
+}
+
+.blend-name {
+    color: var(--text-dark);
+    flex: 1;
+}
+
+.blend-calc {
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.blend-calc strong {
+    color: var(--primary-color);
+    font-size: 1.05rem;
+}
+
 .checklist-container {
     display: grid;
     gap: 25px;

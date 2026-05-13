@@ -238,6 +238,56 @@
                             </div>
                         </div>
                     </div>
+
+                    <h3>Practicum Grade</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light); margin: -8px 0 16px;">
+                        If you have received your practicum grade, enter your scores below.
+                        Your overall score for each SLO will be
+                        <strong>60% semester-long + 40% practicum</strong>.
+                        Leave N/A if you haven't received it yet.
+                    </p>
+                    <div class="slo-grid">
+                        <div class="slo-item">
+                            <label>Analyze real-world experimental data</label>
+                            <div class="input-group">
+                                <input type="number" id="practicumAnalyze" step="0.1" min="0" max="3" placeholder="0.0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="practicumAnalyzeNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Observe, make a hypothesis, create a test</label>
+                            <div class="input-group">
+                                <input type="number" id="practicumObserve" step="0.1" min="0" max="3" placeholder="0.0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="practicumObserveNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Create lab reports in line with scientific standards</label>
+                            <div class="input-group">
+                                <input type="number" id="practicumCreate" step="0.1" min="0" max="3" placeholder="0.0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="practicumCreateNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="slo-item">
+                            <label>Display good scientific practices</label>
+                            <div class="input-group">
+                                <input type="number" id="practicumSciPrac" step="0.1" min="0" max="3" placeholder="0.0" disabled>
+                                <label class="na-checkbox">
+                                    <input type="checkbox" id="practicumSciPracNA" checked>
+                                    <span>N/A</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button id="calculateBtn" class="calculate-btn">Calculate My Grade</button>
@@ -245,6 +295,8 @@
 
             <section class="results-section" id="resultsSection" style="display: none;">
                 <h2>Your Grade Calculation</h2>
+
+                <div id="practicumSection"></div>
 
                 <div class="checklist-container" id="checklistContainer">
                     <!-- Checklists will be inserted here by JavaScript -->
