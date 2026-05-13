@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'Apply the principles of fluid physics',
         'Apply the principles of rotational kinematics and dynamics',
         'Display good scientific practices',
+        'Identify the forces acting on an object and draw a FBD',
     ];
 
     const labSLONames = [
@@ -171,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             minLabSLO: evaluatedLab.length > 0 ? Math.min(...evaluatedLab.filter(s => s > 0)) : Infinity,
             totalEvaluatedPhysics: evaluatedPhysics.length,
             totalEvaluatedLab: evaluatedLab.length,
-            totalPhysics: 11,
+            totalPhysics: 12,
             totalLab: 4
         };
 
@@ -229,9 +230,9 @@ document.addEventListener('DOMContentLoaded', function() {
             minSLO: Math.min(...[...bestPhysics, ...bestLab]),
             minPhysicsSLO: Math.min(...bestPhysics),
             minLabSLO: Math.min(...bestLab),
-            totalEvaluatedPhysics: 11,
+            totalEvaluatedPhysics: 12,
             totalEvaluatedLab: 4,
-            totalPhysics: 11,
+            totalPhysics: 12,
             totalLab: 4
         };
     }
@@ -270,9 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
             minSLO: Math.min(...[...worstPhysics, ...worstLab].filter(s => s >= 0)),
             minPhysicsSLO: worstPhysics.length > 0 ? Math.min(...worstPhysics.filter(s => s >= 0)) : 0,
             minLabSLO: worstLab.length > 0 ? Math.min(...worstLab.filter(s => s >= 0)) : 0,
-            totalEvaluatedPhysics: 11,
+            totalEvaluatedPhysics: 12,
             totalEvaluatedLab: 4,
-            totalPhysics: 11,
+            totalPhysics: 12,
             totalLab: 4
         };
     }
