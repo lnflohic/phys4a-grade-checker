@@ -23,18 +23,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle special N/A checkboxes (project, concept, practicum)
-    ['projectNA', 'project3NA', 'conceptNA',
+    ['projectGradeNA', 'conceptNA',
      'practicumAnalyzeNA', 'practicumObserveNA', 'practicumCreateNA', 'practicumSciPracNA'
     ].forEach(id => {
         const checkbox = document.getElementById(id);
         if (checkbox) {
             checkbox.addEventListener('change', function() {
                 const inputId = id.replace('NA', '');
+                // 'conceptNA' → 'concept' → mapped to 'conceptMatching'; all others match input id directly
                 const input = document.getElementById(
-                    inputId === 'project'  ? 'projectSLOs'    :
-                    inputId === 'project3' ? 'projectSLOs3'   :
-                    inputId === 'concept'  ? 'conceptMatching' :
-                    inputId   // practicumAnalyze, practicumObserve, practicumCreate, practicumSciPrac
+                    inputId === 'concept' ? 'conceptMatching' : inputId
                 );
                 if (input) {
                     input.disabled = this.checked;
@@ -100,13 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const labsMissed = parseInt(document.getElementById('labsMissed').value) || 0;
 
-        const projectNA   = document.getElementById('projectNA').checked;
-        const project3NA  = document.getElementById('project3NA').checked;
-        const conceptNA   = document.getElementById('conceptNA').checked;
+        const projectGradeNA  = document.getElementById('projectGradeNA').checked;
+        const conceptNA       = document.getElementById('conceptNA').checked;
 
-        const projectSLOs    = projectNA  ? null : (parseInt(document.getElementById('projectSLOs').value)    || 0);
-        const projectSLOs3   = project3NA ? null : (parseInt(document.getElementById('projectSLOs3').value)   || 0);
-        const conceptMatching = conceptNA ? null : (parseFloat(document.getElementById('conceptMatching').value) || 0);
+        const projectGrade    = projectGradeNA ? null : (parseFloat(document.getElementById('projectGrade').value) || 0);
+        const conceptMatching = conceptNA      ? null : (parseFloat(document.getElementById('conceptMatching').value) || 0);
 
         // Read practicum scores (4 SLOs graded on the practicum assignment)
         const pracRead = (id) => {
@@ -164,8 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labSLOsAbove2_5:  evaluatedLab.filter(s => s >= 2.5).length,
             behaviorSLOsAbove1_75: evaluatedBehavior.length > 0 ? evaluatedBehavior.filter(s => s >= 1.75).length : null,
             labsMissed: labsMissed,
-            projectSLOs: projectSLOs,
-            projectSLOs3: projectSLOs3,
+            projectGrade: projectGrade,
             conceptMatching: conceptMatching,
             minSLO: Math.min(...[...evaluatedPhysics, ...evaluatedLab].filter(s => s > 0)),
             minPhysicsSLO: evaluatedPhysics.length > 0 ? Math.min(...evaluatedPhysics.filter(s => s > 0)) : Infinity,
@@ -224,8 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labSLOsAbove2_5:  bestLab.filter(s => s >= 2.5).length,
             behaviorSLOsAbove1_75: bestBehavior.filter(s => s >= 1.75).length,
             labsMissed: currentStats.labsMissed,
-            projectSLOs: currentStats.projectSLOs === null ? 3 : currentStats.projectSLOs,
-            projectSLOs3: currentStats.projectSLOs3 === null ? 3 : currentStats.projectSLOs3,
+            projectGrade: currentStats.projectGrade === null ? 3.0 : currentStats.projectGrade,
             conceptMatching: currentStats.conceptMatching === null ? 3.0 : currentStats.conceptMatching,
             minSLO: Math.min(...[...bestPhysics, ...bestLab]),
             minPhysicsSLO: Math.min(...bestPhysics),
@@ -265,8 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labSLOsAbove2_5:  worstLab.filter(s => s >= 2.5).length,
             behaviorSLOsAbove1_75: worstBehavior.filter(s => s >= 1.75).length,
             labsMissed: currentStats.labsMissed,
-            projectSLOs: currentStats.projectSLOs === null ? 0 : currentStats.projectSLOs,
-            projectSLOs3: currentStats.projectSLOs3 === null ? 0 : currentStats.projectSLOs3,
+            projectGrade: currentStats.projectGrade === null ? 0.0 : currentStats.projectGrade,
             conceptMatching: currentStats.conceptMatching === null ? 0.0 : currentStats.conceptMatching,
             minSLO: Math.min(...[...worstPhysics, ...worstLab].filter(s => s >= 0)),
             minPhysicsSLO: worstPhysics.length > 0 ? Math.min(...worstPhysics.filter(s => s >= 0)) : 0,
@@ -326,14 +319,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: skipBehavior
             },
             {
-                met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 3,
-                label: 'All project SLOs ≥2.0',
-                skip: isNA(stats.projectSLOs)
-            },
-            {
-                met: !isNA(stats.projectSLOs3) && stats.projectSLOs3 >= 1,
-                label: '1/3 of project SLO =3.0',
-                skip: isNA(stats.projectSLOs3)
+                met: !isNA(stats.projectGrade) && stats.projectGrade >= 2.0,
+                label: 'Project ≥2.0',
+                skip: isNA(stats.projectGrade)
             },
             {
                 met: !isNA(stats.conceptMatching) && stats.conceptMatching >= 2.0,
@@ -389,9 +377,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 skip: skipPhysics && skipLab
             },
             {
-                met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 2,
-                label: '2/3 of project SLO ≥2.0',
-                skip: isNA(stats.projectSLOs)
+                met: !isNA(stats.projectGrade) && stats.projectGrade >= 1.0,
+                label: 'Project ≥1.0',
+                skip: isNA(stats.projectGrade)
             },
             {
                 met: isNA(stats.conceptMatching) || stats.conceptMatching < 2.0,
@@ -534,8 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { label: skipLab ? '1/4 lab SLOs ≥2.2'  : `${Math.ceil(numLab * (1/4))}/${numLab} lab SLOs ≥2.2`,  met: skipLab ? null : stats.labSLOsAbove2_2  >= Math.ceil(numLab * (1/4)), skip: skipLab },
                 { label: 'Missed ≤1 lab', met: stats.labsMissed <= 1, skip: false },
                 { label: 'Behavior SLOs ≥1.75', met: skipBehavior ? null : stats.behaviorSLOsAbove1_75 >= 2, skip: skipBehavior },
-                { label: 'All project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 3, skip: isNA(stats.projectSLOs) },
-                { label: '1/3 project SLOs =3.0', met: !isNA(stats.projectSLOs3) && stats.projectSLOs3 >= 1, skip: isNA(stats.projectSLOs3) },
+                { label: 'Project ≥2.0', met: !isNA(stats.projectGrade) && stats.projectGrade >= 2.0, skip: isNA(stats.projectGrade) },
                 { label: '≥2.0 on concept matching', met: !isNA(stats.conceptMatching) && stats.conceptMatching >= 2.0, skip: isNA(stats.conceptMatching) },
             ],
             B: [
@@ -546,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { label: 'No SLO <1.5', met: (skipPhysics && skipLab) ? null : stats.minSLO >= 1.5, skip: skipPhysics && skipLab },
                 { label: 'Missed ≤2 labs', met: stats.labsMissed <= 2, skip: false },
                 { label: '1 behavior SLO ≥1.75', met: skipBehavior ? null : stats.behaviorSLOsAbove1_75 >= 1, skip: skipBehavior },
-                { label: '2/3 project SLOs ≥2.0', met: !isNA(stats.projectSLOs) && stats.projectSLOs >= 2, skip: isNA(stats.projectSLOs) },
+                { label: 'Project ≥1.0', met: !isNA(stats.projectGrade) && stats.projectGrade >= 1.0, skip: isNA(stats.projectGrade) },
             ],
             C: [
                 { label: skipPhysics ? '6/12 physics SLOs ≥1.75' : `${Math.ceil(numPhysics * (6/12))}/${numPhysics} physics SLOs ≥1.75`, met: skipPhysics ? null : stats.physicsSLOsAbove1_75 >= Math.ceil(numPhysics * (6/12)), skip: skipPhysics },
